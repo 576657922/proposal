@@ -119,6 +119,36 @@ if (orb1 && orb2) {
     }, { passive: true });
 }
 
+// ===== Timeline scroll-driven progress =====
+const timeline = document.getElementById('timeline');
+const timelineProgress = document.getElementById('timelineProgress');
+const timelineDots = document.querySelectorAll('.timeline-dot');
+const STEP_COUNT = timelineDots.length;
+
+if (timeline && timelineProgress) {
+    window.addEventListener('scroll', () => {
+        const rect = timeline.getBoundingClientRect();
+        const viewH = window.innerHeight;
+        // start when top hits 60% of viewport, end when bottom hits 40%
+        const start = viewH * 0.6;
+        const end = viewH * 0.4;
+        const totalTravel = (rect.height + start - end);
+        const traveled = start - rect.top;
+        const p = Math.max(0, Math.min(1, traveled / totalTravel));
+
+        timelineProgress.style.height = (p * 100) + '%';
+
+        timelineDots.forEach((dot, i) => {
+            const threshold = (i + 1) / (STEP_COUNT + 0.5);
+            if (p >= threshold) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }, { passive: true });
+}
+
 // ===== Three.js animation loop =====
 const clock = new THREE.Clock();
 

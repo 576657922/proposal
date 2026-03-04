@@ -5,7 +5,7 @@ export const CONFIG = {
     globeRadius: 7,
     particleSize: 1.8,
     color: 0xe8ff47,
-    rotationSpeed: 0.0008
+    rotationSpeed: 0.0014
 };
 
 export const ZOOM_FAR = 45;

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
     --bg: #0a0a0a;
@@ -25,7 +25,7 @@ html {
 
 body, html {
     width: 100%;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     background-color: var(--bg);
     color: var(--fg);
 }
@@ -209,26 +209,6 @@ body::before {
     padding: 40px;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-}
-
-.logo { font-size: 20px; font-weight: 400; letter-spacing: -0.5px; }
-
-.status-bar {
-    display: flex;
-    gap: 20px;
-    opacity: 0.8;
-    align-items: center;
-}
-
-.wifi-icon { width: 16px; height: 16px; fill: currentColor; }
-
 .ui-layer main { max-width: 600px; margin-bottom: 20px; }
 
 /* Hero label */
@@ -392,6 +372,93 @@ header {
     line-height: 1.7;
     color: var(--muted);
     max-width: none;
+    margin-bottom: 0;
+}
+
+/* ===== Process timeline ===== */
+.process-header {
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 80px;
+}
+
+.timeline {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-left: 40px;
+}
+
+.timeline-line {
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(255,255,255,0.08);
+}
+
+.timeline-progress {
+    position: absolute;
+    left: 8px;
+    top: 0;
+    width: 2px;
+    height: 0;
+    background: var(--accent);
+}
+
+.timeline-node {
+    position: relative;
+    padding-bottom: 80px;
+}
+
+.timeline-node:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -37px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: var(--bg);
+    transition: border-color 0.4s ease, background 0.4s ease;
+}
+
+.timeline-dot.active {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+.timeline-step {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.timeline-title {
+    display: block;
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin-bottom: 12px;
+}
+
+.timeline-desc {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 420px;
     margin-bottom: 0;
 }
 
@@ -721,8 +788,6 @@ header {
     .ui-layer { padding: 20px; }
     .hero-title { font-size: 2.5rem; }
     .hero-sub { font-size: 1rem; }
-    .status-bar span { display: none; }
-    .status-bar .wifi-icon { display: block; }
 
     .section {
         padding: 80px 20px;
@@ -736,6 +801,10 @@ header {
     .about-grid {
         grid-template-columns: 1fr;
         gap: 24px;
+    }
+
+    .timeline {
+        padding-left: 32px;
     }
 
     .skills-grid {
