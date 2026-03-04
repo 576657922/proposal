@@ -6,35 +6,206 @@
     <title>rithmic.co - 立足山梨，链接全球</title>
 </head>
 <body>
-    <div id="loading">正在加载高精度地球数据...</div>
+    <!-- Custom cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
 
-    <div id="canvas-container"></div>
+    <!-- Floating background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-    <div class="ui-layer">
-        <header>
-            <div class="logo">rithmic.co</div>
-            <div class="status-bar">
-                <span>07:15</span>
-                <span>开启</span>
-                <svg class="wifi-icon" viewBox="0 0 24 24">
-                    <path d="M12.01 21.49L23.64 7c-3.45-3.18-8.22-5-11.63-5S3.81 3.82.36 7l11.65 14.49z"/>
-                </svg>
-                <span>开启</span>
+    <!-- Navigation -->
+    <nav class="site-nav">
+        <a href="#" class="nav-logo">rithmic.co</a>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#work">Work</a>
+            <a href="#skills">Skills</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero section with sticky scroll -->
+    <div class="hero-wrapper">
+        <div class="hero">
+            <div id="loading">正在加载高精度地球数据...</div>
+            <div id="canvas-container"></div>
+            <div class="ui-layer">
+                <header>
+                    <div class="logo">rithmic.co</div>
+                    <div class="status-bar">
+                        <span>07:15</span>
+                        <span>開啟</span>
+                        <svg class="wifi-icon" viewBox="0 0 24 24">
+                            <path d="M12.01 21.49L23.64 7c-3.45-3.18-8.22-5-11.63-5S3.81 3.82.36 7l11.65 14.49z"/>
+                        </svg>
+                        <span>開啟</span>
+                    </div>
+                </header>
+
+                <main>
+                    <div class="hero-label">Design & Engineering Studio</div>
+                    <h1 class="hero-title">
+                        <span class="line"><span>立足山梨，</span></span><br>
+                        <span class="line"><span>链接全球。</span></span>
+                    </h1>
+                    <p class="hero-sub">我们专注于全方位产品构建、机器学习系统、数据科学以及顶级跨学科团队的协作组建。</p>
+                </main>
+
+                <div class="action-area">
+                    <div class="hero-scroll">
+                        <span>Scroll to explore</span>
+                        <div class="scroll-line"><span></span></div>
+                    </div>
+                </div>
             </div>
-        </header>
-
-        <main>
-            <h1>立足山梨，<br>链接全球。</h1>
-            <p>我们专注于全方位产品构建、机器学习系统、数据科学以及顶级跨学科团队的协作组建。</p>
-        </main>
-
-        <div class="action-area">
-            <button class="abstract-btn">
-                <div class="spinner"></div>
-                [ 抽象概念 ]
-            </button>
         </div>
     </div>
+
+    <!-- About -->
+    <section id="about" class="section">
+        <div class="section-inner">
+            <span class="section-label reveal">( 01 — About )</span>
+            <h2 class="reveal">We build products<br>that move the needle.</h2>
+            <div class="about-grid">
+                <div class="about-col reveal">
+                    <p>rithmic.co is a multidisciplinary team based in Yamanashi, Japan — working with clients and collaborators worldwide. We sit at the intersection of engineering, design, and data.</p>
+                </div>
+                <div class="about-col reveal">
+                    <p>From machine learning pipelines to polished consumer products, we bring clarity and craft to every layer of the stack. We believe great work comes from small, focused teams with shared context.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work -->
+    <section id="work" class="section section-dark">
+        <div class="section-inner">
+            <span class="section-label reveal">( 02 — Work )</span>
+            <h2 class="reveal">Selected projects</h2>
+            <div class="project-list">
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name">Terrain Intelligence Platform</span>
+                        <div class="project-tags">
+                            <span class="tag">ML</span>
+                            <span class="tag">Geospatial</span>
+                            <span class="tag">2025</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name">Consumer Fintech App</span>
+                        <div class="project-tags">
+                            <span class="tag">Product</span>
+                            <span class="tag">Full-stack</span>
+                            <span class="tag">2024</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name">Real-time Analytics Dashboard</span>
+                        <div class="project-tags">
+                            <span class="tag">Data Science</span>
+                            <span class="tag">Visualization</span>
+                            <span class="tag">2024</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name">Autonomous Inspection System</span>
+                        <div class="project-tags">
+                            <span class="tag">Computer Vision</span>
+                            <span class="tag">Edge ML</span>
+                            <span class="tag">2023</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee strip -->
+    <div class="marquee-strip">
+        <div class="marquee-track">
+            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Three.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">TypeScript</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Python</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Node.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">WebGL</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Next.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Go</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Three.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">TypeScript</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Python</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Node.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">WebGL</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Next.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Go</span><span class="marquee-dot">·</span>
+        </div>
+    </div>
+
+    <!-- Skills -->
+    <section id="skills" class="section">
+        <div class="section-inner">
+            <span class="section-label reveal">( 03 — Skills )</span>
+            <h2 class="reveal">What we work with</h2>
+            <div class="skills-grid">
+                <div class="skill-cell reveal">
+                    <span class="skill-number">01</span>
+                    <h3>Machine Learning</h3>
+                    <p>Deep learning, NLP, computer vision, MLOps pipelines, and model deployment at scale.</p>
+                </div>
+                <div class="skill-cell reveal">
+                    <span class="skill-number">02</span>
+                    <h3>Full-stack</h3>
+                    <p>React, Node, Python, Go — from responsive frontends to robust API layers and infrastructure.</p>
+                </div>
+                <div class="skill-cell reveal">
+                    <span class="skill-number">03</span>
+                    <h3>Data Science</h3>
+                    <p>Statistical modeling, experiment design, ETL pipelines, and actionable insight delivery.</p>
+                </div>
+                <div class="skill-cell reveal">
+                    <span class="skill-number">04</span>
+                    <h3>Product</h3>
+                    <p>User research, interaction design, rapid prototyping, and end-to-end product strategy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section section-dark">
+        <div class="section-inner contact-inner">
+            <span class="section-label reveal">( 04 — Contact )</span>
+            <h2 class="reveal">Let's build<br>something together.</h2>
+            <p class="contact-desc reveal">We're always interested in ambitious projects and great people. Drop us a line.</p>
+            <a href="mailto:hello@rithmic.co" class="contact-btn reveal">hello@rithmic.co →</a>
+            <div class="social-links reveal">
+                <a href="#">Twitter</a>
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span class="footer-logo">rithmic.co</span>
+            <span class="footer-copy">© 2026</span>
+        </div>
+    </footer>
 
     <script type="module" src="/src/js/main.js"></script>
 </body>

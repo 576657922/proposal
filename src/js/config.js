@@ -4,14 +4,12 @@ export const CONFIG = {
     particleCount: 200000,
     globeRadius: 7,
     particleSize: 1.8,
-    color: 0xffcc00,
+    color: 0xe8ff47,
     rotationSpeed: 0.0008
 };
 
 export const ZOOM_FAR = 45;
 export const ZOOM_CLOSE = 18;
-export const SCROLL_SENSITIVITY = 0.0015;
-
 // Pre-compute Japan Yamanashi quaternion for camera targeting
 const _jLat = 35.66 * (Math.PI / 180);
 const _jLon = 138.57 * (Math.PI / 180);
