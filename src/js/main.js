@@ -6,6 +6,7 @@ import { createGlobe } from './globe.js';
 import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
+import { textScramble } from './text-scramble.js';
 
 // Initialize scroll-driven zoom
 initScrollControls();
@@ -71,7 +72,24 @@ if ('ontouchstart' in window) {
 const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            const delay = i * 80;
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+
+                // Trigger scramble on the element itself
+                if (entry.target.hasAttribute('data-scramble')) {
+                    textScramble(entry.target, entry.target.getAttribute('data-scramble'), 900);
+                }
+
+                // Also trigger scramble on child elements with data-scramble
+                entry.target.querySelectorAll('[data-scramble]').forEach((child, ci) => {
+                    setTimeout(() => {
+                        textScramble(child, child.getAttribute('data-scramble'), 800);
+                    }, ci * 120);
+                });
+            }, delay);
+
+            observer.unobserve(entry.target);
         }
     });
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
