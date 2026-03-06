@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import '../styles/main.css';
 import { CONFIG, ZOOM_FAR, ZOOM_CLOSE, japanQuaternion } from './config.js';
-import { scene, camera, renderer, controls } from './scene.js';
+import { scene, camera, renderer, composer, controls } from './scene.js';
 import { createGlobe } from './globe.js';
 import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
@@ -66,6 +66,7 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // ===== Custom cursor =====
@@ -89,10 +90,73 @@ function animateRing() {
 }
 animateRing();
 
-// Expand ring on interactive elements
-document.querySelectorAll('a, button, .project-item, .contact-btn, .skill-cell').forEach(el => {
+const cursorLabel = document.getElementById('cursorLabel');
+
+// Expand ring on interactive elements (non-project)
+document.querySelectorAll('a:not(.project-item), button, .contact-btn, .skill-cell').forEach(el => {
     el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
     el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
+});
+
+// ===== Project hover image preview =====
+const projectPreview = document.getElementById('projectPreview');
+const previewImgs = document.querySelectorAll('.preview-img');
+const projectItems = document.querySelectorAll('.project-item');
+
+let previewX = 0, previewY = 0, previewTargetX = 0, previewTargetY = 0;
+
+function animatePreview() {
+    previewX += (previewTargetX - previewX) * 0.1;
+    previewY += (previewTargetY - previewY) * 0.1;
+    projectPreview.style.left = previewX + 'px';
+    projectPreview.style.top = previewY + 'px';
+    requestAnimationFrame(animatePreview);
+}
+animatePreview();
+
+projectItems.forEach((item, index) => {
+    item.addEventListener('mouseenter', () => {
+        // Cursor: show "View" label
+        ring.classList.add('cursor-view');
+        ring.classList.remove('hovered');
+        cursorLabel.textContent = 'View';
+        dot.style.opacity = '0';
+
+        // Preview: show correct image
+        projectPreview.classList.add('active');
+        previewImgs.forEach(img => img.classList.remove('active'));
+        if (previewImgs[index]) previewImgs[index].classList.add('active');
+    });
+
+    item.addEventListener('mouseleave', () => {
+        ring.classList.remove('cursor-view');
+        cursorLabel.textContent = '';
+        dot.style.opacity = '1';
+        projectPreview.classList.remove('active');
+    });
+
+    item.addEventListener('mousemove', (e) => {
+        previewTargetX = e.clientX + 24;
+        previewTargetY = e.clientY - 220;
+    });
+});
+
+// ===== Magnetic buttons =====
+const magneticEls = document.querySelectorAll('.contact-btn, .nav-links a');
+
+magneticEls.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const deltaX = (e.clientX - cx) * 0.3;
+        const deltaY = (e.clientY - cy) * 0.3;
+        gsap.to(el, { x: deltaX, y: deltaY, duration: 0.3, ease: 'power3.out' });
+    });
+
+    el.addEventListener('mouseleave', () => {
+        gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
+    });
 });
 
 // Hide cursor on touch devices
@@ -314,7 +378,7 @@ function animate() {
         camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 
-    renderer.render(scene, camera);
+    composer.render();
 }
 
 window.onload = function () {

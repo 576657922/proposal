@@ -8,7 +8,17 @@
 <body>
     <!-- Custom cursor -->
     <div class="cursor-dot" id="cursorDot"></div>
-    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="cursor-ring" id="cursorRing">
+        <span class="cursor-label" id="cursorLabel"></span>
+    </div>
+
+    <!-- Project hover preview -->
+    <div class="project-preview" id="projectPreview">
+        <div class="preview-img" data-index="0" style="background: linear-gradient(135deg, #1a3a2a, #0a2a1a);"><span>01</span></div>
+        <div class="preview-img" data-index="1" style="background: linear-gradient(135deg, #2a1a3a, #1a0a2a);"><span>02</span></div>
+        <div class="preview-img" data-index="2" style="background: linear-gradient(135deg, #1a2a3a, #0a1a2a);"><span>03</span></div>
+        <div class="preview-img" data-index="3" style="background: linear-gradient(135deg, #3a2a1a, #2a1a0a);"><span>04</span></div>
+    </div>
 
     <!-- Floating background orbs -->
     <div class="orb orb-1"></div>
