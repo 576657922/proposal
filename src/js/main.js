@@ -7,6 +7,33 @@ import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
+import Lenis from 'lenis';
+import gsap from 'gsap';
+import SplitType from 'split-type';
+
+// ===== Lenis smooth scroll =====
+const lenis = new Lenis({
+    lerp: 0.07,
+    wheelMultiplier: 0.8,
+    smoothTouch: false,
+});
+
+function lenisRaf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(lenisRaf);
+}
+requestAnimationFrame(lenisRaf);
+
+// Smooth scroll for anchor links via Lenis
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            lenis.scrollTo(target);
+        }
+    });
+});
 
 // Initialize scroll-driven zoom
 initScrollControls();
@@ -14,6 +41,12 @@ initScrollControls();
 let globePoints = null;
 let markerGroup = null;
 let currentSpinAngle = 0;
+
+// Pre-allocated objects for animation loop (avoid per-frame GC)
+const _spinQuat = new THREE.Quaternion();
+const _finalQuat = new THREE.Quaternion();
+const _yAxis = new THREE.Vector3(0, 1, 0);
+const _worldPos = new THREE.Vector3();
 
 // Load earth specular texture
 const textureLoader = new THREE.TextureLoader();
@@ -94,7 +127,7 @@ const observer = new IntersectionObserver(entries => {
     });
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+document.querySelectorAll('.reveal, .reveal-scale, .reveal-clip, .reveal-left').forEach(el => observer.observe(el));
 
 // ===== Stats count-up animation =====
 const countObserver = new IntersectionObserver(entries => {
@@ -122,15 +155,61 @@ const countObserver = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.stat-number[data-count]').forEach(el => countObserver.observe(el));
 
-// ===== Smooth scroll for anchor links =====
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-        const target = document.querySelector(a.getAttribute('href'));
-        if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
+// ===== Hero SplitText animation =====
+const heroTitle = document.querySelector('.hero-title');
+if (heroTitle) {
+    // Remove CSS animation classes so GSAP takes over
+    heroTitle.querySelectorAll('.line span').forEach(span => {
+        span.style.opacity = '0';
+        span.style.transform = 'translateY(100%)';
+        span.style.animation = 'none';
     });
+
+    const split = new SplitType(heroTitle, {
+        types: 'lines, words, chars',
+        lineClass: 'split-line',
+        wordClass: 'split-word',
+        charClass: 'split-char',
+    });
+
+    // Ensure parent lines are visible
+    heroTitle.querySelectorAll('.line span').forEach(span => {
+        span.style.opacity = '1';
+        span.style.transform = 'none';
+    });
+
+    gsap.set(split.chars, { y: '110%', opacity: 0, rotateX: -80 });
+
+    // Trigger after a short delay
+    gsap.to(split.chars, {
+        y: '0%',
+        opacity: 1,
+        rotateX: 0,
+        stagger: 0.035,
+        duration: 1.2,
+        ease: 'power4.out',
+        delay: 0.6,
+    });
+}
+
+// ===== Hero parallax fade-out on scroll =====
+const heroMain = document.querySelector('.ui-layer main');
+const heroAction = document.querySelector('.action-area');
+
+lenis.on('scroll', () => {
+    const scrollProgress = getScrollProgress();
+
+    // Hero text parallax
+    if (heroMain) {
+        const y = scrollProgress * -120;
+        const opacity = Math.max(0, 1 - scrollProgress * 1.5);
+        const scale = 1 - scrollProgress * 0.1;
+        heroMain.style.transform = `translateY(${y}px) scale(${scale})`;
+        heroMain.style.opacity = opacity;
+    }
+    if (heroAction) {
+        heroAction.style.opacity = Math.max(0, 1 - scrollProgress * 3);
+    }
 });
 
 // ===== Parallax orbs on scroll =====
@@ -190,11 +269,9 @@ function animate() {
         globePoints.material.uniforms.uTime.value = elapsedTime;
 
         // Quaternion interpolation: spin -> Japan close-up
-        const spinQuat = new THREE.Quaternion().setFromAxisAngle(
-            new THREE.Vector3(0, 1, 0), currentSpinAngle
-        );
-        const finalQuat = spinQuat.clone().slerp(japanQuaternion, scrollProgress);
-        globePoints.quaternion.copy(finalQuat);
+        _spinQuat.setFromAxisAngle(_yAxis, currentSpinAngle);
+        _finalQuat.copy(_spinQuat).slerp(japanQuaternion, scrollProgress);
+        globePoints.quaternion.copy(_finalQuat);
     }
 
     // Ring breathing effect and backface transparency
@@ -205,10 +282,9 @@ function animate() {
             ring.scale.set(scale, scale, 1);
         }
 
-        const worldPos = new THREE.Vector3();
-        markerGroup.getWorldPosition(worldPos);
+        markerGroup.getWorldPosition(_worldPos);
 
-        const alpha = Math.max(0, Math.min(1, (worldPos.z + 1.0) / 3.0));
+        const alpha = Math.max(0, Math.min(1, (_worldPos.z + 1.0) / 3.0));
 
         markerGroup.children.forEach(child => {
             if (child.material) {
@@ -235,7 +311,7 @@ function animate() {
     // Camera zoom driven by scroll
     if (globePoints) {
         const targetZ = ZOOM_FAR + (ZOOM_CLOSE - ZOOM_FAR) * scrollProgress;
-        camera.position.z += (targetZ - camera.position.z) * 0.08;
+        camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 
     renderer.render(scene, camera);
