@@ -491,25 +491,32 @@ function animate(time) {
         globePoints.quaternion.copy(_finalQuat);
     }
 
-    // Ring breathing effect and backface transparency
+    // Marker: avatar fades in, ring/line fade out with scroll
     if (markerGroup) {
         const markerRing = markerGroup.children[0];
         if (markerRing) {
-            const scale = 1.0 + Math.sin(elapsedTime * 3) * 0.2;
+            const breathe = 1 - scrollProgress * 0.8;
+            const scale = (1.0 + Math.sin(elapsedTime * 3) * 0.2) * breathe;
             markerRing.scale.set(scale, scale, 1);
         }
 
         markerGroup.getWorldPosition(_worldPos);
+        const backfaceAlpha = Math.max(0, Math.min(1, (_worldPos.z + 1.0) / 3.0));
 
-        const alpha = Math.max(0, Math.min(1, (_worldPos.z + 1.0) / 3.0));
+        // Ring & line fade out as we scroll; avatar fades in
+        const ringFade = Math.max(0, 1 - scrollProgress * 2.5);
+        const avatarReveal = Math.min(1, scrollProgress * 1.5);
 
         markerGroup.children.forEach(child => {
             if (child.material) {
-                let baseOpacity = 1.0;
-                if (child.isLine || child.geometry.type === 'RingGeometry') {
-                    baseOpacity = 0.6;
+                if (child.isSprite) {
+                    // Avatar: starts dim, becomes fully visible on scroll
+                    child.material.opacity = backfaceAlpha * (0.15 + 0.85 * avatarReveal);
+                } else {
+                    // Ring & line: fade out on scroll
+                    const baseOpacity = (child.isLine || child.geometry?.type === 'RingGeometry') ? 0.6 : 1.0;
+                    child.material.opacity = backfaceAlpha * baseOpacity * ringFade;
                 }
-                child.material.opacity = alpha * baseOpacity;
             }
         });
     }
