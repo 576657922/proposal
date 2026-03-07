@@ -504,7 +504,7 @@ function animate(time) {
         const backfaceAlpha = Math.max(0, Math.min(1, (_worldPos.z + 1.0) / 3.0));
 
         // Ring & line fade out as we scroll; avatar fades in
-        const ringFade = Math.max(0, 1 - scrollProgress * 2.5);
+        const ringFade = Math.max(0, 1 - Math.max(0, scrollProgress - 0.3) * 2.5);
         const avatarReveal = Math.min(1, scrollProgress * 1.5);
 
         markerGroup.children.forEach(child => {
