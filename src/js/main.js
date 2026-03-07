@@ -181,6 +181,38 @@ magneticEls.forEach(el => {
     });
 });
 
+// ===== Skill-cell tilt effect =====
+document.querySelectorAll('.skill-cell').forEach(cell => {
+    let rect = null;
+
+    cell.addEventListener('mouseenter', () => {
+        rect = cell.getBoundingClientRect();
+    });
+
+    cell.addEventListener('mousemove', (e) => {
+        if (!rect) return;
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(cell, {
+            rotateY: x * 12,
+            rotateX: -y * 12,
+            transformPerspective: 600,
+            duration: 0.3,
+            ease: 'power1.out',
+        });
+    });
+
+    cell.addEventListener('mouseleave', () => {
+        rect = null;
+        gsap.to(cell, {
+            rotateY: 0,
+            rotateX: 0,
+            duration: 0.6,
+            ease: 'elastic.out(1, 0.5)',
+        });
+    });
+});
+
 // ===== Scroll-triggered reveal (IntersectionObserver with stagger) =====
 const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {

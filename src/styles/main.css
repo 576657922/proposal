@@ -784,6 +784,8 @@ body::before {
 .project-item:hover {
     padding-left: 24px;
     padding-right: 24px;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
 }
 
 .project-item:hover .project-name {
@@ -898,7 +900,14 @@ body::before {
     position: relative;
     padding: 40px;
     background: var(--bg);
-    transition: all var(--duration-slow) var(--ease-out);
+    transition: background var(--duration-slow) var(--ease-out),
+                box-shadow var(--duration-slow) var(--ease-out);
+    will-change: transform;
+}
+
+.skill-cell:hover {
+    background: var(--bg-raised);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* Radial glow on hover */
@@ -913,10 +922,6 @@ body::before {
 
 .skill-cell:hover::after {
     opacity: 1;
-}
-
-.skill-cell:hover {
-    background: var(--bg-raised);
 }
 
 .skill-number {
@@ -1049,25 +1054,33 @@ body::before {
 /* ===== Reveal animations ===== */
 .reveal {
     opacity: 0;
-    transform: translateY(50px);
-    transition: all var(--duration-reveal) var(--ease-out);
+    transform: translateY(50px) scale(0.97);
+    filter: blur(4px);
+    transition: opacity var(--duration-reveal) var(--ease-out),
+                transform var(--duration-reveal) var(--ease-out),
+                filter var(--duration-reveal) var(--ease-out);
 }
 
 .reveal.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
 }
 
 /* Scale variant — for cards and grids */
 .reveal-scale {
     opacity: 0;
     transform: scale(0.92);
-    transition: all var(--duration-reveal) var(--ease-out);
+    filter: blur(6px);
+    transition: opacity var(--duration-reveal) var(--ease-out),
+                transform var(--duration-reveal) var(--ease-out),
+                filter var(--duration-reveal) var(--ease-out);
 }
 
 .reveal-scale.visible {
     opacity: 1;
     transform: scale(1);
+    filter: blur(0);
 }
 
 /* Clip variant — for headings */
@@ -1083,13 +1096,17 @@ body::before {
 /* Left slide variant */
 .reveal-left {
     opacity: 0;
-    transform: translateX(-40px);
-    transition: all var(--duration-reveal) var(--ease-out);
+    transform: translateX(-40px) scale(0.97);
+    filter: blur(4px);
+    transition: opacity var(--duration-reveal) var(--ease-out),
+                transform var(--duration-reveal) var(--ease-out),
+                filter var(--duration-reveal) var(--ease-out);
 }
 
 .reveal-left.visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
+    filter: blur(0);
 }
 
 /* SplitType line overflow */
