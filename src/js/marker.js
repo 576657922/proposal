@@ -1,8 +1,11 @@
-import * as THREE from 'three';
+import {
+    Group, Vector3, RingGeometry, MeshBasicMaterial, DoubleSide, Mesh,
+    BufferGeometry, LineBasicMaterial, Line, CanvasTexture, SpriteMaterial, Sprite
+} from 'three';
 import { CONFIG } from './config.js';
 
 export function createAvatarMarker(globePoints) {
-    const markerGroup = new THREE.Group();
+    const markerGroup = new Group();
 
     // Compute Japan Yamanashi (Lat: 35.66 N, Lon: 138.57 E) surface coordinates
     const lat = 35.66;
@@ -18,36 +21,36 @@ export function createAvatarMarker(globePoints) {
     const rSurfaceAtY = Math.cos(latRad) * surfaceRadius;
     const xSurface = Math.cos(lonRad) * rSurfaceAtY;
     const zSurface = Math.sin(lonRad) * rSurfaceAtY;
-    const surfacePos = new THREE.Vector3(xSurface, ySurface, zSurface);
+    const surfacePos = new Vector3(xSurface, ySurface, zSurface);
 
     // Floating position
     const yFloat = Math.sin(latRad) * floatRadius;
     const rFloatAtY = Math.cos(latRad) * floatRadius;
     const xFloat = Math.cos(lonRad) * rFloatAtY;
     const zFloat = Math.sin(lonRad) * rFloatAtY;
-    const floatPos = new THREE.Vector3(xFloat, yFloat, zFloat);
+    const floatPos = new Vector3(xFloat, yFloat, zFloat);
 
     // --- A. Surface ring (Ripple) ---
-    const ringGeo = new THREE.RingGeometry(0.1, 0.25, 32);
-    const ringMat = new THREE.MeshBasicMaterial({
+    const ringGeo = new RingGeometry(0.1, 0.25, 32);
+    const ringMat = new MeshBasicMaterial({
         color: 0xffcc00,
         transparent: true,
         opacity: 0.8,
-        side: THREE.DoubleSide
+        side: DoubleSide
     });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
+    const ring = new Mesh(ringGeo, ringMat);
     ring.position.copy(surfacePos);
     ring.lookAt(surfacePos.clone().multiplyScalar(2));
     markerGroup.add(ring);
 
     // --- B. Connection line (sci-fi pin) ---
-    const lineGeo = new THREE.BufferGeometry().setFromPoints([surfacePos, floatPos]);
-    const lineMat = new THREE.LineBasicMaterial({
+    const lineGeo = new BufferGeometry().setFromPoints([surfacePos, floatPos]);
+    const lineMat = new LineBasicMaterial({
         color: 0xffcc00,
         transparent: true,
         opacity: 0.5
     });
-    const line = new THREE.Line(lineGeo, lineMat);
+    const line = new Line(lineGeo, lineMat);
     markerGroup.add(line);
 
     // --- C. Floating avatar sprite ---
@@ -86,17 +89,17 @@ export function createAvatarMarker(globePoints) {
         ctx.strokeStyle = '#ffcc00';
         ctx.stroke();
 
-        const texture = new THREE.CanvasTexture(canvas);
+        const texture = new CanvasTexture(canvas);
         texture.needsUpdate = true;
 
         let avatarSprite = markerGroup.children.find(c => c.isSprite);
         if (!avatarSprite) {
-            const material = new THREE.SpriteMaterial({
+            const material = new SpriteMaterial({
                 map: texture,
                 transparent: true,
                 depthTest: false
             });
-            avatarSprite = new THREE.Sprite(material);
+            avatarSprite = new Sprite(material);
             avatarSprite.scale.set(0.9, 0.9, 1);
             avatarSprite.position.copy(floatPos);
             markerGroup.add(avatarSprite);
@@ -105,8 +108,10 @@ export function createAvatarMarker(globePoints) {
                 globePoints.add(markerGroup);
             }
         } else {
+            const oldTexture = avatarSprite.material.map;
             avatarSprite.material.map = texture;
             avatarSprite.material.needsUpdate = true;
+            if (oldTexture) oldTexture.dispose();
         }
     }
 

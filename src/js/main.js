@@ -1,7 +1,7 @@
-import * as THREE from 'three';
+import { Quaternion, Vector3, TextureLoader, Clock } from 'three';
 import '../styles/main.css';
 import { CONFIG, ZOOM_FAR, ZOOM_CLOSE, japanQuaternion } from './config.js';
-import { scene, camera, renderer, composer, controls } from './scene.js';
+import { scene, camera, renderer, controls } from './scene.js';
 import { createGlobe } from './globe.js';
 import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
@@ -17,12 +17,6 @@ const lenis = new Lenis({
     wheelMultiplier: 0.8,
     smoothTouch: false,
 });
-
-function lenisRaf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(lenisRaf);
-}
-requestAnimationFrame(lenisRaf);
 
 // Smooth scroll for anchor links via Lenis
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -43,60 +37,95 @@ let markerGroup = null;
 let currentSpinAngle = 0;
 
 // Pre-allocated objects for animation loop (avoid per-frame GC)
-const _spinQuat = new THREE.Quaternion();
-const _finalQuat = new THREE.Quaternion();
-const _yAxis = new THREE.Vector3(0, 1, 0);
-const _worldPos = new THREE.Vector3();
+const _spinQuat = new Quaternion();
+const _finalQuat = new Quaternion();
+const _yAxis = new Vector3(0, 1, 0);
+const _worldPos = new Vector3();
 
-// Load earth specular texture
-const textureLoader = new THREE.TextureLoader();
-const textureUrl = 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg';
+// Load earth specular texture (local)
+const textureLoader = new TextureLoader();
 
-textureLoader.load(textureUrl, (texture) => {
-    document.getElementById('loading').style.opacity = '0';
-    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+textureLoader.load(
+    '/textures/earth_specular.jpg',
+    (texture) => {
+        document.getElementById('loading').style.opacity = '0';
+        setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
 
-    globePoints = createGlobe(texture);
-    createAtmosphere();
-    markerGroup = createAvatarMarker(globePoints);
-});
+        globePoints = createGlobe(texture);
+        createAtmosphere();
+        markerGroup = createAvatarMarker(globePoints);
+    },
+    undefined,
+    () => {
+        // Fallback: render globe without texture
+        console.warn('Texture load failed, rendering without texture');
+        document.getElementById('loading').style.display = 'none';
+        globePoints = createGlobe(null);
+        createAtmosphere();
+        markerGroup = createAvatarMarker(globePoints);
+    }
+);
 
 // Window resize handler
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// ===== Custom cursor =====
-const dot = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, dx = 0, dy = 0;
-
-document.addEventListener('mousemove', e => {
-    mx = e.clientX;
-    my = e.clientY;
-    dot.style.left = mx - 4 + 'px';
-    dot.style.top = my - 4 + 'px';
-});
-
-function animateRing() {
-    dx += (mx - dx) * 0.12;
-    dy += (my - dy) * 0.12;
-    ring.style.left = dx - 20 + 'px';
-    ring.style.top = dy - 20 + 'px';
-    requestAnimationFrame(animateRing);
-}
-animateRing();
-
+// ===== Custom cursor — crosshair + corner brackets =====
+const isPointerDevice = matchMedia('(pointer: fine)').matches;
+const cross = document.getElementById('cursorCross');
+const bracket = document.getElementById('cursorBracket');
 const cursorLabel = document.getElementById('cursorLabel');
+let mx = 0, my = 0, bx = 0, by = 0;
+let cursorState = 'default'; // 'default' | 'hover' | 'view' | 'cta'
 
-// Expand ring on interactive elements (non-project)
-document.querySelectorAll('a:not(.project-item), button, .contact-btn, .skill-cell').forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
-});
+if (!isPointerDevice) {
+    cross.style.display = 'none';
+    bracket.style.display = 'none';
+}
+
+function setCursorState(state) {
+    if (cursorState === state) return;
+    bracket.classList.remove('hovered', 'cursor-view', 'cursor-cta');
+    cross.classList.remove('hidden');
+    cursorLabel.textContent = '';
+
+    if (state === 'hover') {
+        bracket.classList.add('hovered');
+    } else if (state === 'view') {
+        bracket.classList.add('cursor-view');
+        cursorLabel.textContent = 'View';
+        cross.classList.add('hidden');
+    } else if (state === 'cta') {
+        bracket.classList.add('cursor-cta');
+        cursorLabel.textContent = 'Say hi';
+        cross.classList.add('hidden');
+    }
+    cursorState = state;
+}
+
+if (isPointerDevice) {
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX;
+        my = e.clientY;
+        cross.style.setProperty('--cx', mx + 'px');
+        cross.style.setProperty('--cy', my + 'px');
+    });
+
+    // Hover links — brackets expand + accent
+    document.querySelectorAll('a:not(.project-item):not(.contact-btn), button, .skill-cell').forEach(el => {
+        el.addEventListener('mouseenter', () => setCursorState('hover'));
+        el.addEventListener('mouseleave', () => setCursorState('default'));
+    });
+
+    // Contact button — filled circle + "Say hi"
+    document.querySelectorAll('.contact-btn').forEach(el => {
+        el.addEventListener('mouseenter', () => setCursorState('cta'));
+        el.addEventListener('mouseleave', () => setCursorState('default'));
+    });
+}
 
 // ===== Project hover image preview =====
 const projectPreview = document.getElementById('projectPreview');
@@ -104,34 +133,20 @@ const previewImgs = document.querySelectorAll('.preview-img');
 const projectItems = document.querySelectorAll('.project-item');
 
 let previewX = 0, previewY = 0, previewTargetX = 0, previewTargetY = 0;
-
-function animatePreview() {
-    previewX += (previewTargetX - previewX) * 0.1;
-    previewY += (previewTargetY - previewY) * 0.1;
-    projectPreview.style.left = previewX + 'px';
-    projectPreview.style.top = previewY + 'px';
-    requestAnimationFrame(animatePreview);
-}
-animatePreview();
+let previewActive = false;
 
 projectItems.forEach((item, index) => {
     item.addEventListener('mouseenter', () => {
-        // Cursor: show "View" label
-        ring.classList.add('cursor-view');
-        ring.classList.remove('hovered');
-        cursorLabel.textContent = 'View';
-        dot.style.opacity = '0';
-
-        // Preview: show correct image
+        setCursorState('view');
+        previewActive = true;
         projectPreview.classList.add('active');
         previewImgs.forEach(img => img.classList.remove('active'));
         if (previewImgs[index]) previewImgs[index].classList.add('active');
     });
 
     item.addEventListener('mouseleave', () => {
-        ring.classList.remove('cursor-view');
-        cursorLabel.textContent = '';
-        dot.style.opacity = '1';
+        setCursorState('default');
+        previewActive = false;
         projectPreview.classList.remove('active');
     });
 
@@ -145,25 +160,26 @@ projectItems.forEach((item, index) => {
 const magneticEls = document.querySelectorAll('.contact-btn, .nav-links a');
 
 magneticEls.forEach(el => {
+    let cachedRect = null;
+
+    el.addEventListener('mouseenter', () => {
+        cachedRect = el.getBoundingClientRect();
+    });
+
     el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
+        if (!cachedRect) return;
+        const cx = cachedRect.left + cachedRect.width / 2;
+        const cy = cachedRect.top + cachedRect.height / 2;
         const deltaX = (e.clientX - cx) * 0.3;
         const deltaY = (e.clientY - cy) * 0.3;
         gsap.to(el, { x: deltaX, y: deltaY, duration: 0.3, ease: 'power3.out' });
     });
 
     el.addEventListener('mouseleave', () => {
+        cachedRect = null;
         gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
     });
 });
-
-// Hide cursor on touch devices
-if ('ontouchstart' in window) {
-    dot.style.display = 'none';
-    ring.style.display = 'none';
-}
 
 // ===== Scroll-triggered reveal (IntersectionObserver with stagger) =====
 const observer = new IntersectionObserver(entries => {
@@ -256,12 +272,20 @@ if (heroTitle) {
     });
 }
 
-// ===== Hero parallax fade-out on scroll =====
+// ===== Scroll-driven elements =====
 const heroMain = document.querySelector('.ui-layer main');
 const heroAction = document.querySelector('.action-area');
+const orb1 = document.querySelector('.orb-1');
+const orb2 = document.querySelector('.orb-2');
+const timeline = document.getElementById('timeline');
+const timelineProgress = document.getElementById('timelineProgress');
+const timelineDots = document.querySelectorAll('.timeline-dot');
+const STEP_COUNT = timelineDots.length;
 
+// Unified scroll handler via Lenis
 lenis.on('scroll', () => {
     const scrollProgress = getScrollProgress();
+    const s = window.scrollY;
 
     // Hero text parallax
     if (heroMain) {
@@ -274,31 +298,17 @@ lenis.on('scroll', () => {
     if (heroAction) {
         heroAction.style.opacity = Math.max(0, 1 - scrollProgress * 3);
     }
-});
 
-// ===== Parallax orbs on scroll =====
-const orb1 = document.querySelector('.orb-1');
-const orb2 = document.querySelector('.orb-2');
+    // Parallax orbs
+    if (orb1 && orb2) {
+        orb1.style.transform = `translate(${s * 0.03}px, ${s * -0.05}px)`;
+        orb2.style.transform = `translate(${s * -0.02}px, ${s * 0.04}px)`;
+    }
 
-if (orb1 && orb2) {
-    window.addEventListener('scroll', () => {
-        const s = window.scrollY;
-        orb1.style.transform = 'translate(' + s * 0.03 + 'px,' + s * -0.05 + 'px)';
-        orb2.style.transform = 'translate(' + s * -0.02 + 'px,' + s * 0.04 + 'px)';
-    }, { passive: true });
-}
-
-// ===== Timeline scroll-driven progress =====
-const timeline = document.getElementById('timeline');
-const timelineProgress = document.getElementById('timelineProgress');
-const timelineDots = document.querySelectorAll('.timeline-dot');
-const STEP_COUNT = timelineDots.length;
-
-if (timeline && timelineProgress) {
-    window.addEventListener('scroll', () => {
+    // Timeline progress
+    if (timeline && timelineProgress) {
         const rect = timeline.getBoundingClientRect();
         const viewH = window.innerHeight;
-        // start when top hits 60% of viewport, end when bottom hits 40%
         const start = viewH * 0.6;
         const end = viewH * 0.4;
         const totalTravel = (rect.height + start - end);
@@ -315,15 +325,34 @@ if (timeline && timelineProgress) {
                 dot.classList.remove('active');
             }
         });
-    }, { passive: true });
-}
+    }
+});
 
-// ===== Three.js animation loop =====
-const clock = new THREE.Clock();
+// ===== Unified animation loop =====
+const clock = new Clock();
 
-function animate() {
+function animate(time) {
     requestAnimationFrame(animate);
 
+    // Lenis
+    lenis.raf(time);
+
+    // Cursor bracket follow (only pointer devices)
+    if (isPointerDevice) {
+        bx += (mx - bx) * 0.12;
+        by += (my - by) * 0.12;
+        bracket.style.setProperty('--bx', bx + 'px');
+        bracket.style.setProperty('--by', by + 'px');
+
+        // Preview follow (only when active)
+        if (previewActive) {
+            previewX += (previewTargetX - previewX) * 0.1;
+            previewY += (previewTargetY - previewY) * 0.1;
+            projectPreview.style.transform = `translate(${previewX}px, ${previewY}px)`;
+        }
+    }
+
+    // Three.js
     const elapsedTime = clock.getElapsedTime();
     const scrollProgress = getScrollProgress();
 
@@ -340,10 +369,10 @@ function animate() {
 
     // Ring breathing effect and backface transparency
     if (markerGroup) {
-        const ring = markerGroup.children[0];
-        if (ring) {
+        const markerRing = markerGroup.children[0];
+        if (markerRing) {
             const scale = 1.0 + Math.sin(elapsedTime * 3) * 0.2;
-            ring.scale.set(scale, scale, 1);
+            markerRing.scale.set(scale, scale, 1);
         }
 
         markerGroup.getWorldPosition(_worldPos);
@@ -362,11 +391,7 @@ function animate() {
     }
 
     // Disable OrbitControls when scroll zoom is active
-    if (scrollProgress > 0.01) {
-        controls.enabled = false;
-    } else {
-        controls.enabled = true;
-    }
+    controls.enabled = scrollProgress <= 0.01;
 
     if (controls.enabled) {
         controls.update();
@@ -378,9 +403,18 @@ function animate() {
         camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 
-    composer.render();
+    renderer.render(scene, camera);
 }
 
+// Pause animation when tab is hidden
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        clock.stop();
+    } else {
+        clock.start();
+    }
+});
+
 window.onload = function () {
-    animate();
+    animate(performance.now());
 };

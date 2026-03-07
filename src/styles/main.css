@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@property --bk-size {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 40px;
+}
 
 :root {
     --bg: #0a0a0a;
@@ -80,44 +84,118 @@ body::before {
     mix-blend-mode: overlay;
 }
 
-/* ===== Custom cursor ===== */
-.cursor-dot {
+/* ===== Custom cursor — crosshair + corner brackets ===== */
+.cursor-cross {
     position: fixed;
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
+    top: 0;
+    left: 0;
     pointer-events: none;
     z-index: 9999;
-    mix-blend-mode: difference;
+    will-change: transform;
+    transform: translate(var(--cx, 0), var(--cy, 0));
+    transition: opacity 0.2s;
 }
 
-.cursor-ring {
+.cursor-cross.hidden { opacity: 0; }
+
+.cross-dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--fg);
+    top: -2px;
+    left: -2px;
+}
+
+.cross-h,
+.cross-v {
+    position: absolute;
+    background: rgba(240, 236, 228, 0.25);
+}
+
+.cross-h {
+    width: 18px;
+    height: 1px;
+    top: -0.5px;
+    left: -9px;
+}
+
+.cross-v {
+    width: 1px;
+    height: 18px;
+    top: -9px;
+    left: -0.5px;
+}
+
+/* Corner brackets — camera viewfinder */
+.cursor-bracket {
     position: fixed;
-    width: 40px;
-    height: 40px;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
+    top: 0;
+    left: 0;
     pointer-events: none;
     z-index: 9998;
-    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
-    mix-blend-mode: difference;
+    will-change: transform;
+    --bk-size: 40px;
+    width: var(--bk-size);
+    height: var(--bk-size);
+    transform: translate(
+        calc(var(--bx, 0) - var(--bk-size) / 2),
+        calc(var(--by, 0) - var(--bk-size) / 2)
+    );
+    transition: --bk-size var(--duration-normal) var(--ease-out),
+                opacity var(--duration-normal) var(--ease-out);
 }
 
-.cursor-ring.hovered {
-    width: 64px;
-    height: 64px;
+.bracket-corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: rgba(240, 236, 228, 0.35);
+    border-style: solid;
+    border-width: 0;
+    transition: border-color var(--duration-normal) var(--ease-out),
+                width var(--duration-normal) var(--ease-out),
+                height var(--duration-normal) var(--ease-out);
+}
+
+.bc-tl { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+.bc-tr { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+.bc-bl { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.bc-br { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* Hover links — brackets expand + accent */
+.cursor-bracket.hovered {
+    --bk-size: 56px;
     opacity: 0.5;
 }
-
-/* Cursor with "View" label for projects */
-.cursor-ring.cursor-view {
-    width: 80px;
-    height: 80px;
-    background: var(--accent);
+.cursor-bracket.hovered .bracket-corner {
     border-color: var(--accent);
+}
+
+/* Project hover — morph to filled circle + label */
+.cursor-bracket.cursor-view {
+    --bk-size: 80px;
+    background: var(--accent);
+    border-radius: 50%;
     opacity: 1;
-    mix-blend-mode: normal;
+}
+.cursor-bracket.cursor-view .bracket-corner {
+    border-color: transparent;
+    width: 0;
+    height: 0;
+}
+
+/* Contact CTA hover */
+.cursor-bracket.cursor-cta {
+    --bk-size: 88px;
+    background: var(--fg);
+    border-radius: 50%;
+    opacity: 1;
+}
+.cursor-bracket.cursor-cta .bracket-corner {
+    border-color: transparent;
+    width: 0;
+    height: 0;
 }
 
 .cursor-label {
@@ -125,24 +203,27 @@ body::before {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--bg);
     opacity: 0;
     pointer-events: none;
     white-space: nowrap;
-    transition: opacity 0.2s;
+    transition: opacity var(--duration-fast);
 }
 
-.cursor-view .cursor-label {
+.cursor-view .cursor-label,
+.cursor-cta .cursor-label {
     opacity: 1;
 }
 
 /* ===== Project hover preview ===== */
 .project-preview {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 320px;
     height: 200px;
     border-radius: 12px;
@@ -150,8 +231,8 @@ body::before {
     pointer-events: none;
     z-index: 9990;
     opacity: 0;
-    transform: scale(0.85);
-    transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+    will-change: transform;
+    transition: opacity 0.3s var(--ease-out);
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 
@@ -182,7 +263,7 @@ body::before {
 }
 
 @media (pointer: coarse) {
-    .cursor-dot, .cursor-ring { display: none !important; }
+    .cursor-cross, .cursor-bracket { display: none !important; }
     body { cursor: auto; }
 }
 

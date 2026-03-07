@@ -5,5 +5,13 @@ export default defineConfig({
   publicDir: 'public',
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          vendor: ['gsap', 'lenis', 'split-type'],
+        }
+      }
+    }
   },
 })

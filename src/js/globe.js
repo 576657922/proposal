@@ -1,9 +1,9 @@
-import * as THREE from 'three';
+import { BufferGeometry, BufferAttribute, ShaderMaterial, Color, Points, AdditiveBlending } from 'three';
 import { CONFIG, japanQuaternion } from './config.js';
 import { scene } from './scene.js';
 
 export function createGlobe(texture) {
-    const geometry = new THREE.BufferGeometry();
+    const geometry = new BufferGeometry();
     const positions = new Float32Array(CONFIG.particleCount * 3);
     const uvs = new Float32Array(CONFIG.particleCount * 2);
 
@@ -28,13 +28,13 @@ export function createGlobe(texture) {
         uvs[i * 2 + 1] = v;
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.setAttribute('position', new BufferAttribute(positions, 3));
+    geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
 
-    const shaderMaterial = new THREE.ShaderMaterial({
+    const shaderMaterial = new ShaderMaterial({
         uniforms: {
             uTexture: { value: texture },
-            uColor: { value: new THREE.Color(CONFIG.color) },
+            uColor: { value: new Color(CONFIG.color) },
             uTime: { value: 0 },
             uHasTexture: { value: texture ? 1.0 : 0.0 }
         },
@@ -66,11 +66,11 @@ export function createGlobe(texture) {
             }
         `,
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false
     });
 
-    const globePoints = new THREE.Points(geometry, shaderMaterial);
+    const globePoints = new Points(geometry, shaderMaterial);
 
     // Initial orientation: use quaternion to precisely position Japan facing camera
     globePoints.quaternion.copy(japanQuaternion);

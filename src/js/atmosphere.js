@@ -1,11 +1,11 @@
-import * as THREE from 'three';
+import { SphereGeometry, ShaderMaterial, Color, AdditiveBlending, Mesh } from 'three';
 import { CONFIG } from './config.js';
 import { scene } from './scene.js';
 
 export function createAtmosphere() {
-    const atmosGeo = new THREE.SphereGeometry(CONFIG.globeRadius * 1.02, 64, 64);
-    const atmosMat = new THREE.ShaderMaterial({
-        uniforms: { uColor: { value: new THREE.Color(CONFIG.color) } },
+    const atmosGeo = new SphereGeometry(CONFIG.globeRadius * 1.02, 32, 32);
+    const atmosMat = new ShaderMaterial({
+        uniforms: { uColor: { value: new Color(CONFIG.color) } },
         vertexShader: `
             varying vec3 vNormal;
             varying vec3 vPosition;
@@ -25,9 +25,9 @@ export function createAtmosphere() {
                 gl_FragColor = vec4(uColor, intensity * 0.15);
             }
         `,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         transparent: true,
         depthWrite: false
     });
-    scene.add(new THREE.Mesh(atmosGeo, atmosMat));
+    scene.add(new Mesh(atmosGeo, atmosMat));
 }
