@@ -1200,11 +1200,17 @@ body.is-loading {
     }
 
     .nav-links {
-        gap: 20px;
+        gap: 12px;
     }
 
     .nav-links a {
-        font-size: 11px;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .lang-toggle {
+        font-size: 10px;
+        padding: 4px 10px;
     }
 
     .ui-layer { padding: 20px; }
@@ -1259,6 +1265,20 @@ body.is-loading {
 
 @media (max-width: 480px) {
     .nav-links {
-        display: none;
+        gap: 8px;
+    }
+
+    .nav-links a {
+        font-size: 9px;
+        letter-spacing: 0;
+    }
+
+    .lang-toggle {
+        font-size: 9px;
+        padding: 3px 8px;
+    }
+
+    .nav-logo {
+        font-size: 14px;
     }
 }
