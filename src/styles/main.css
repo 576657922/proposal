@@ -327,7 +327,29 @@ body::before {
 
 .nav-links {
     display: flex;
+    align-items: center;
     gap: 32px;
+}
+
+.lang-toggle {
+    background: none;
+    border: 1px solid var(--border-medium);
+    color: var(--fg);
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: none;
+    opacity: 0.7;
+    transition: opacity var(--duration-normal) var(--ease-out),
+                border-color var(--duration-normal) var(--ease-out);
+}
+
+.lang-toggle:hover {
+    opacity: 1;
+    border-color: var(--accent);
 }
 
 .nav-links a {
@@ -551,17 +573,64 @@ body::before {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-#loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    font-size: 14px;
-    letter-spacing: 2px;
-    color: var(--accent);
-    transition: opacity 0.5s;
+/* ===== Preloader ===== */
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 10002;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
 }
+
+.preloader.exit {
+    transform: translateY(-100%);
+}
+
+.preloader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.preloader-brand {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    min-height: 1.2em;
+}
+
+.preloader-counter {
+    font-family: var(--font);
+    font-weight: 300;
+    font-size: clamp(4rem, 10vw, 8rem);
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.preloader-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.15s linear;
+}
+
+body.is-loading {
+    overflow: hidden;
+}
+
+#loading { display: none; }
 
 /* ===== Sections ===== */
 .section {

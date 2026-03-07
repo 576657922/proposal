@@ -7,6 +7,7 @@ import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
+import { toggleLang, getCurrentLang } from './i18n.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import SplitType from 'split-type';
@@ -34,6 +35,7 @@ initScrollControls();
 
 let globePoints = null;
 let markerGroup = null;
+let heroSplitTl = null;
 let currentSpinAngle = 0;
 
 // Pre-allocated objects for animation loop (avoid per-frame GC)
@@ -42,27 +44,103 @@ const _finalQuat = new Quaternion();
 const _yAxis = new Vector3(0, 1, 0);
 const _worldPos = new Vector3();
 
+// ===== Preloader =====
+const preloader = document.getElementById('preloader');
+const preloaderBrand = document.getElementById('preloaderBrand');
+const preloaderCounter = document.getElementById('preloaderCounter');
+const preloaderLine = document.getElementById('preloaderLine');
+
+document.body.classList.add('is-loading');
+
+// Brand text scramble
+textScramble(preloaderBrand, 'rithmic.co', 1000);
+
+let textureReady = false;
+let fontsReady = false;
+let loadProgress = 0;
+let displayedProgress = 0;
+const MIN_DISPLAY_TIME = 1400;
+const preloaderStart = performance.now();
+
+function updateCounter(value) {
+    displayedProgress = value;
+    const str = String(Math.floor(value)).padStart(3, '0');
+    preloaderCounter.textContent = str;
+    preloaderLine.style.width = value + '%';
+}
+
+function checkReady() {
+    if (!textureReady || !fontsReady) return;
+
+    const elapsed = performance.now() - preloaderStart;
+    const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+
+    // Animate counter to 100
+    const startVal = displayedProgress;
+    const counterDuration = Math.max(remaining, 400);
+    const counterStart = performance.now();
+
+    function tickCounter() {
+        const t = Math.min(1, (performance.now() - counterStart) / counterDuration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        updateCounter(startVal + (100 - startVal) * eased);
+
+        if (t < 1) {
+            requestAnimationFrame(tickCounter);
+        } else {
+            // Exit preloader
+            setTimeout(exitPreloader, 200);
+        }
+    }
+    requestAnimationFrame(tickCounter);
+}
+
+function exitPreloader() {
+    preloader.classList.add('exit');
+    document.body.classList.remove('is-loading');
+
+    // Trigger hero animation after preloader starts sliding
+    setTimeout(() => {
+        if (heroSplitTl) heroSplitTl.play();
+    }, 300);
+
+    // Remove preloader from DOM after transition
+    preloader.addEventListener('transitionend', () => {
+        preloader.remove();
+    }, { once: true });
+}
+
+// Font loading gate
+document.fonts.ready.then(() => {
+    fontsReady = true;
+    checkReady();
+});
+
 // Load earth specular texture (local)
 const textureLoader = new TextureLoader();
 
 textureLoader.load(
     '/textures/earth_specular.jpg',
     (texture) => {
-        document.getElementById('loading').style.opacity = '0';
-        setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
-
         globePoints = createGlobe(texture);
         createAtmosphere();
         markerGroup = createAvatarMarker(globePoints);
+        textureReady = true;
+        checkReady();
     },
-    undefined,
+    (xhr) => {
+        if (xhr.lengthComputable) {
+            loadProgress = (xhr.loaded / xhr.total) * 90;
+            updateCounter(loadProgress);
+        }
+    },
     () => {
-        // Fallback: render globe without texture
         console.warn('Texture load failed, rendering without texture');
-        document.getElementById('loading').style.display = 'none';
         globePoints = createGlobe(null);
         createAtmosphere();
         markerGroup = createAvatarMarker(globePoints);
+        textureReady = true;
+        checkReady();
     }
 );
 
@@ -71,6 +149,23 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ===== Language toggle =====
+const langToggle = document.getElementById('langToggle');
+langToggle.addEventListener('click', () => {
+    const newLang = toggleLang();
+    langToggle.textContent = newLang === 'ja' ? 'English' : '日本語';
+
+    // Re-run SplitType on hero title after innerHTML change
+    const heroTitleEl = document.querySelector('.hero-title');
+    if (heroTitleEl) {
+        heroTitleEl.querySelectorAll('.line span').forEach(span => {
+            span.style.opacity = '1';
+            span.style.transform = 'none';
+            span.style.animation = 'none';
+        });
+    }
 });
 
 // ===== Custom cursor — crosshair + corner brackets =====
@@ -267,10 +362,9 @@ const countObserver = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.stat-number[data-count]').forEach(el => countObserver.observe(el));
 
-// ===== Hero SplitText animation =====
+// ===== Hero SplitText animation (paused — triggered after preloader) =====
 const heroTitle = document.querySelector('.hero-title');
 if (heroTitle) {
-    // Remove CSS animation classes so GSAP takes over
     heroTitle.querySelectorAll('.line span').forEach(span => {
         span.style.opacity = '0';
         span.style.transform = 'translateY(100%)';
@@ -284,7 +378,6 @@ if (heroTitle) {
         charClass: 'split-char',
     });
 
-    // Ensure parent lines are visible
     heroTitle.querySelectorAll('.line span').forEach(span => {
         span.style.opacity = '1';
         span.style.transform = 'none';
@@ -292,15 +385,14 @@ if (heroTitle) {
 
     gsap.set(split.chars, { y: '110%', opacity: 0, rotateX: -80 });
 
-    // Trigger after a short delay
-    gsap.to(split.chars, {
+    heroSplitTl = gsap.to(split.chars, {
         y: '0%',
         opacity: 1,
         rotateX: 0,
         stagger: 0.035,
         duration: 1.2,
         ease: 'power4.out',
-        delay: 0.6,
+        paused: true,
     });
 }
 

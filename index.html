@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rithmic.co - Based in Yamanashi, Connected Globally</title>
-    <meta name="description" content="Design & Engineering Studio based in Japan. Full-stack product development, machine learning systems, and data science.">
-    <meta property="og:title" content="rithmic.co - Based in Japan, Connected Globally">
-    <meta property="og:description" content="Design & Engineering Studio. Full-stack development, ML systems, and data science.">
+    <title>rithmic.co - Web Developer Based in Japan</title>
+    <meta name="description" content="Web developer based in Japan. MVPs, web apps, and landing pages with Next.js, TypeScript, and Supabase.">
+    <meta property="og:title" content="rithmic.co - Web Developer Based in Japan">
+    <meta property="og:description" content="Web apps, MVPs, and landing pages. Next.js, TypeScript, Supabase, PostgreSQL.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
 </head>
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-brand" id="preloaderBrand"> </span>
+            <span class="preloader-counter" id="preloaderCounter">000</span>
+        </div>
+        <div class="preloader-line" id="preloaderLine"></div>
+    </div>
+
     <!-- Custom cursor -->
     <div class="cursor-cross" id="cursorCross">
         <span class="cross-h"></span>
@@ -42,31 +51,32 @@
     <nav class="site-nav">
         <a href="#" class="nav-logo">rithmic.co</a>
         <div class="nav-links">
-            <a href="#about">About</a>
-            <a href="#work">Work</a>
-            <a href="#skills">Skills</a>
-            <a href="#contact">Contact</a>
+            <a href="#about" data-i18n="nav.about">About</a>
+            <a href="#work" data-i18n="nav.work">Work</a>
+            <a href="#skills" data-i18n="nav.skills">Skills</a>
+            <a href="#contact" data-i18n="nav.contact">Contact</a>
+            <button class="lang-toggle" id="langToggle">日本語</button>
         </div>
     </nav>
 
     <!-- Hero section with sticky scroll -->
     <div class="hero-wrapper">
         <div class="hero">
-            <div id="loading">Loading high-precision globe data...</div>
+            <div id="loading" style="display:none;"></div>
             <div id="canvas-container"></div>
             <div class="ui-layer">
                 <main>
-                    <div class="hero-label">Design & Engineering Studio</div>
-                    <h1 class="hero-title">
+                    <div class="hero-label" data-i18n="hero.label">Web Developer</div>
+                    <h1 class="hero-title" data-i18n-html="hero.title">
                         <span class="line"><span>Based in <em>Japan,</em></span></span><br>
                         <span class="line"><span>Connected <em>globally.</em></span></span>
                     </h1>
-                    <p class="hero-sub">I specialize in full-stack product development, machine learning systems, data science, and building elite cross-disciplinary collaborations.</p>
+                    <p class="hero-sub" data-i18n="hero.sub">I build web apps, MVPs, and landing pages for small teams and early-stage products — with a focus on clarity, performance, and long-term maintainability.</p>
                 </main>
 
                 <div class="action-area">
                     <div class="hero-scroll">
-                        <span>Scroll</span>
+                        <span data-i18n="hero.scroll">Scroll</span>
                         <div class="scroll-line">
                             <span class="scroll-glow"></span>
                             <span class="scroll-dot"></span>
@@ -80,24 +90,24 @@
     <!-- About -->
     <section id="about" class="section">
         <div class="section-inner">
-            <span class="section-label reveal" data-scramble="( 01 — About )"> </span>
-            <h2 class="reveal" data-scramble="I build products that move the needle."> </h2>
+            <span class="section-label reveal" data-scramble="( 01 — About )" data-i18n-scramble="about.label"> </span>
+            <h2 class="reveal" data-scramble="I build products that ship and last." data-i18n-scramble="about.heading"> </h2>
             <div class="about-grid">
                 <div class="about-col reveal-left">
-                    <p>I'm an independent developer based in Yamanashi, Japan — working with clients and collaborators worldwide. I sit at the intersection of engineering, design, and data.</p>
+                    <p data-i18n="about.col1">I'm a web developer based in Yamanashi, Japan — working with clients and collaborators worldwide. Most of my work involves improving existing codebases: adding features, fixing UI or logic issues, and adjusting implementations to match real requirements.</p>
                 </div>
                 <div class="about-col reveal-left">
-                    <p>From machine learning pipelines to polished consumer products, I bring clarity and craft to every layer of the stack. I believe great work comes from focused execution with shared context.</p>
+                    <p data-i18n="about.col2">I've worked with both modern web stacks and enterprise systems, so I think about structure and long-term maintenance — not just making things work for now. I keep communication simple and practical: confirm requirements early, share progress when needed.</p>
                 </div>
             </div>
             <div class="about-stats reveal">
                 <div class="stat">
-                    <span class="stat-number" data-count="3" data-suffix="+">0+</span>
-                    <span class="stat-label">Years Experience</span>
+                    <span class="stat-number" data-count="5" data-suffix="+">0+</span>
+                    <span class="stat-label" data-i18n="about.stat1">Years Experience</span>
                 </div>
                 <div class="stat">
                     <span class="stat-number" data-count="40" data-suffix="+">0+</span>
-                    <span class="stat-label">Projects Delivered</span>
+                    <span class="stat-label" data-i18n="about.stat2">Projects Delivered</span>
                 </div>
             </div>
         </div>
@@ -106,30 +116,30 @@
     <!-- Process timeline -->
     <section id="process" class="section section-dark">
         <div class="section-inner">
-            <span class="process-header">My Process</span>
+            <span class="process-header" data-i18n="process.header">My Process</span>
             <div class="timeline" id="timeline">
                 <div class="timeline-line"></div>
                 <div class="timeline-progress" id="timelineProgress"></div>
 
                 <div class="timeline-node">
                     <div class="timeline-dot"></div>
-                    <span class="timeline-step">Step 01</span>
-                    <span class="timeline-title">Discovery</span>
-                    <p class="timeline-desc">Placeholder description for step one.</p>
+                    <span class="timeline-step" data-i18n="process.step1">Step 01</span>
+                    <span class="timeline-title" data-i18n="process.title1">Discovery</span>
+                    <p class="timeline-desc" data-i18n="process.desc1">Understand the product, the users, and what's already built. Confirm requirements early to avoid unnecessary back-and-forth.</p>
                 </div>
 
                 <div class="timeline-node">
                     <div class="timeline-dot"></div>
-                    <span class="timeline-step">Step 02</span>
-                    <span class="timeline-title">Architecture</span>
-                    <p class="timeline-desc">Placeholder description for step two.</p>
+                    <span class="timeline-step" data-i18n="process.step2">Step 02</span>
+                    <span class="timeline-title" data-i18n="process.title2">Build & Iterate</span>
+                    <p class="timeline-desc" data-i18n="process.desc2">Start with a small task or feature to check fit, then move fast on implementation with regular progress updates.</p>
                 </div>
 
                 <div class="timeline-node">
                     <div class="timeline-dot"></div>
-                    <span class="timeline-step">Step 03</span>
-                    <span class="timeline-title">Execution</span>
-                    <p class="timeline-desc">Placeholder description for step three.</p>
+                    <span class="timeline-step" data-i18n="process.step3">Step 03</span>
+                    <span class="timeline-title" data-i18n="process.title3">Ship & Maintain</span>
+                    <p class="timeline-desc" data-i18n="process.desc3">Deliver clean, maintainable code that's built to last — not just to pass review. Refactor where it matters.</p>
                 </div>
             </div>
         </div>
@@ -138,15 +148,15 @@
     <!-- Work -->
     <section id="work" class="section section-dark">
         <div class="section-inner">
-            <span class="section-label reveal" data-scramble="( 02 — Work )"> </span>
-            <h2 class="reveal" data-scramble="Selected projects"> </h2>
+            <span class="section-label reveal" data-scramble="( 02 — Work )" data-i18n-scramble="work.label"> </span>
+            <h2 class="reveal" data-scramble="Selected projects" data-i18n-scramble="work.heading"> </h2>
             <div class="project-list">
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Terrain Intelligence Platform"> </span>
+                        <span class="project-name" data-scramble="SaaS Admin Dashboard" data-i18n-scramble="work.project1"> </span>
                         <div class="project-tags">
-                            <span class="tag">ML</span>
-                            <span class="tag">Geospatial</span>
+                            <span class="tag">Next.js</span>
+                            <span class="tag">Supabase</span>
                             <span class="tag">2025</span>
                         </div>
                     </div>
@@ -154,9 +164,9 @@
                 </a>
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Consumer Fintech App"> </span>
+                        <span class="project-name" data-scramble="Fintech MVP" data-i18n-scramble="work.project2"> </span>
                         <div class="project-tags">
-                            <span class="tag">Product</span>
+                            <span class="tag">TypeScript</span>
                             <span class="tag">Full-stack</span>
                             <span class="tag">2024</span>
                         </div>
@@ -165,10 +175,10 @@
                 </a>
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Real-time Analytics Dashboard"> </span>
+                        <span class="project-name" data-scramble="E-commerce Landing Page" data-i18n-scramble="work.project3"> </span>
                         <div class="project-tags">
-                            <span class="tag">Data Science</span>
-                            <span class="tag">Visualization</span>
+                            <span class="tag">Next.js</span>
+                            <span class="tag">Performance</span>
                             <span class="tag">2024</span>
                         </div>
                     </div>
@@ -176,10 +186,10 @@
                 </a>
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Autonomous Inspection System"> </span>
+                        <span class="project-name" data-scramble="Enterprise Workflow System" data-i18n-scramble="work.project4"> </span>
                         <div class="project-tags">
-                            <span class="tag">Computer Vision</span>
-                            <span class="tag">Edge ML</span>
+                            <span class="tag">Java</span>
+                            <span class="tag">Spring Boot</span>
                             <span class="tag">2023</span>
                         </div>
                     </div>
@@ -192,50 +202,50 @@
     <!-- Marquee strip -->
     <div class="marquee-strip">
         <div class="marquee-track">
-            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Three.js</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">TypeScript</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Python</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Node.js</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">WebGL</span><span class="marquee-dot">·</span>
             <span class="marquee-item">Next.js</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Go</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Three.js</span><span class="marquee-dot">·</span>
             <span class="marquee-item">TypeScript</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Python</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Supabase</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">PostgreSQL</span><span class="marquee-dot">·</span>
             <span class="marquee-item">Node.js</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">WebGL</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Java</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Spring Boot</span><span class="marquee-dot">·</span>
             <span class="marquee-item">Next.js</span><span class="marquee-dot">·</span>
-            <span class="marquee-item">Go</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">TypeScript</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">React</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Supabase</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">PostgreSQL</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Node.js</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Java</span><span class="marquee-dot">·</span>
+            <span class="marquee-item">Spring Boot</span><span class="marquee-dot">·</span>
         </div>
     </div>
 
     <!-- Skills -->
     <section id="skills" class="section">
         <div class="section-inner">
-            <span class="section-label reveal" data-scramble="( 03 — Skills )"> </span>
-            <h2 class="reveal" data-scramble="What I work with"> </h2>
+            <span class="section-label reveal" data-scramble="( 03 — Skills )" data-i18n-scramble="skills.label"> </span>
+            <h2 class="reveal" data-scramble="What I work with" data-i18n-scramble="skills.heading"> </h2>
             <div class="skills-grid">
                 <div class="skill-cell reveal-scale">
                     <span class="skill-number">01</span>
-                    <h3 data-scramble="Machine Learning"> </h3>
-                    <p>Deep learning, NLP, computer vision, MLOps pipelines, and model deployment at scale.</p>
+                    <h3 data-scramble="Frontend" data-i18n-scramble="skills.title1"> </h3>
+                    <p data-i18n="skills.desc1">Next.js, React, TypeScript — responsive UIs, landing pages, and interactive web apps with a focus on performance.</p>
                 </div>
                 <div class="skill-cell reveal-scale">
                     <span class="skill-number">02</span>
-                    <h3 data-scramble="Full-stack"> </h3>
-                    <p>React, Node, Python, Go — from responsive frontends to robust API layers and infrastructure.</p>
+                    <h3 data-scramble="Backend" data-i18n-scramble="skills.title2"> </h3>
+                    <p data-i18n="skills.desc2">Supabase, PostgreSQL, Node.js — authentication, CRUD features, admin dashboards, and API integration.</p>
                 </div>
                 <div class="skill-cell reveal-scale">
                     <span class="skill-number">03</span>
-                    <h3 data-scramble="Data Science"> </h3>
-                    <p>Statistical modeling, experiment design, ETL pipelines, and actionable insight delivery.</p>
+                    <h3 data-scramble="Enterprise" data-i18n-scramble="skills.title3"> </h3>
+                    <p data-i18n="skills.desc3">Java, Spring Boot — structured systems built for long-term maintenance and reliability, not just quick fixes.</p>
                 </div>
                 <div class="skill-cell reveal-scale">
                     <span class="skill-number">04</span>
-                    <h3 data-scramble="Product"> </h3>
-                    <p>User research, interaction design, rapid prototyping, and end-to-end product strategy.</p>
+                    <h3 data-scramble="Refactoring" data-i18n-scramble="skills.title4"> </h3>
+                    <p data-i18n="skills.desc4">Extending existing codebases, fixing UI and logic issues, and adjusting implementations to match real requirements.</p>
                 </div>
             </div>
         </div>
@@ -244,9 +254,9 @@
     <!-- Contact -->
     <section id="contact" class="section section-dark">
         <div class="section-inner contact-inner">
-            <span class="section-label reveal" data-scramble="( 04 — Contact )"> </span>
-            <h2 class="reveal" data-scramble="Let's build something together."> </h2>
-            <p class="contact-desc reveal">I'm always interested in ambitious projects and great collaborators. Drop me a line.</p>
+            <span class="section-label reveal" data-scramble="( 04 — Contact )" data-i18n-scramble="contact.label"> </span>
+            <h2 class="reveal" data-scramble="Let's build something together." data-i18n-scramble="contact.heading"> </h2>
+            <p class="contact-desc reveal" data-i18n="contact.desc">Available 30–40 hours per week. Happy to start with a small task to check fit before moving forward.</p>
             <a href="mailto:hello@rithmic.co" class="contact-btn reveal">hello@rithmic.co →</a>
             <div class="social-links reveal">
                 <a href="#">Twitter</a>
