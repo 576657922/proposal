@@ -30,3 +30,7 @@ controls.enablePan = false;
 controls.enableZoom = false;
 controls.minDistance = 10;
 controls.maxDistance = 50;
+
+// Disable touch controls so they don't block page scrolling on mobile
+controls.touches = {};
+renderer.domElement.style.touchAction = 'pan-y';
