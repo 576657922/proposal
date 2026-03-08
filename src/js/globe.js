@@ -36,7 +36,8 @@ export function createGlobe(texture) {
             uTexture: { value: texture },
             uColor: { value: new Color(CONFIG.color) },
             uTime: { value: 0 },
-            uHasTexture: { value: texture ? 1.0 : 0.0 }
+            uHasTexture: { value: texture ? 1.0 : 0.0 },
+            uBrightness: { value: 0.3 }
         },
         vertexShader: `
             varying vec2 vUv;
@@ -53,6 +54,7 @@ export function createGlobe(texture) {
             uniform sampler2D uTexture;
             uniform vec3 uColor;
             uniform float uHasTexture;
+            uniform float uBrightness;
             varying vec2 vUv;
             void main() {
                 float dist = length(gl_PointCoord - vec2(0.5));
@@ -62,7 +64,7 @@ export function createGlobe(texture) {
                     vec4 texColor = texture2D(uTexture, vUv);
                     if (texColor.r > 0.3) discard;
                 }
-                gl_FragColor = vec4(uColor, alpha * 0.9);
+                gl_FragColor = vec4(uColor, alpha * 0.9 * uBrightness);
             }
         `,
         transparent: true,

@@ -86,6 +86,10 @@ body::before {
     mix-blend-mode: overlay;
 }
 
+@media (pointer: fine) {
+    body::before { display: none; }
+}
+
 /* ===== Custom cursor — crosshair + corner brackets ===== */
 .cursor-cross {
     position: fixed;
@@ -923,12 +927,11 @@ body.is-loading {
     color: var(--muted);
     position: relative;
     z-index: 1;
-    transition: all var(--duration-normal) var(--ease-out);
+    transition: color var(--duration-normal) var(--ease-out);
 }
 
 .project-item:hover .project-arrow {
     color: var(--accent);
-    transform: translateX(8px) rotate(-45deg);
 }
 
 /* ===== Marquee strip ===== */
@@ -992,6 +995,7 @@ body.is-loading {
     height: 380px;
     flex-shrink: 0;
     perspective: 1000px;
+    transform-style: preserve-3d;
     cursor: pointer;
 }
 
@@ -1143,7 +1147,7 @@ body.is-loading {
 
 /* ===== Contact ===== */
 #contact {
-    background: radial-gradient(ellipse at center, rgba(232,255,71,0.04) 0%, transparent 60%);
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 60%);
 }
 
 .contact-inner {

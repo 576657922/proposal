@@ -9,6 +9,9 @@ import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
 import { toggleLang, getCurrentLang } from './i18n.js';
 import { CursorRipple } from './cursor-ripple.js';
+import { initAnimatedGrain } from './grain.js';
+import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
+import { initStaggerReveals, initParallax, initColorTransitions, initParagraphReveals } from './scroll-effects.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -49,6 +52,8 @@ const cursorRipple = new CursorRipple(null, {
     intensity: 0.4,         // peak alpha
     velocityScale: 2.5,     // radius boost from speed
 });
+
+initAnimatedGrain();
 
 let globePoints = null;
 let markerGroup = null;
@@ -135,6 +140,12 @@ function exitPreloader() {
     setTimeout(() => {
         if (heroSplitTl) heroSplitTl.play();
     }, 300);
+
+    if (globePoints) {
+        gsap.to(globePoints.material.uniforms.uBrightness, {
+            value: 1.0, duration: 1.8, ease: 'power2.out'
+        });
+    }
 
     preloader.addEventListener('transitionend', () => {
         preloader.remove();
@@ -284,29 +295,7 @@ projectItems.forEach((item, index) => {
 });
 
 // ===== Magnetic buttons =====
-const magneticEls = document.querySelectorAll('.contact-btn, .nav-links a');
-
-magneticEls.forEach(el => {
-    let cachedRect = null;
-
-    el.addEventListener('mouseenter', () => {
-        cachedRect = el.getBoundingClientRect();
-    });
-
-    el.addEventListener('mousemove', (e) => {
-        if (!cachedRect) return;
-        const cx = cachedRect.left + cachedRect.width / 2;
-        const cy = cachedRect.top + cachedRect.height / 2;
-        const deltaX = (e.clientX - cx) * 0.3;
-        const deltaY = (e.clientY - cy) * 0.3;
-        gsap.to(el, { x: deltaX, y: deltaY, duration: 0.3, ease: 'power3.out' });
-    });
-
-    el.addEventListener('mouseleave', () => {
-        cachedRect = null;
-        gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
-    });
-});
+initMagneticButtons();
 
 // ===== Card flip on click =====
 document.querySelectorAll('.skill-cell').forEach(cell => {
@@ -314,6 +303,9 @@ document.querySelectorAll('.skill-cell').forEach(cell => {
         cell.classList.toggle('flipped');
     });
 });
+
+initCardTilt();
+initArrowBounce();
 
 // ===== 1. Skills card fan → spread on scroll =====
 const skillCells = gsap.utils.toArray('.skill-cell');
@@ -359,6 +351,8 @@ if (skillCells.length === 4 && window.innerWidth > 900) {
     });
 }
 
+initStaggerReveals();
+
 // ===== 2. Section headings — scroll-scrubbed character reveal =====
 document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEach(heading => {
     // Wait for scramble to complete before splitting
@@ -371,10 +365,12 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
     if (split.chars && split.chars.length > 0) {
         gsap.fromTo(split.chars,
-            { opacity: 0.12, color: 'var(--muted)' },
+            { opacity: 0.12, color: 'var(--muted)', y: 20, filter: 'blur(4px)' },
             {
                 opacity: 1,
                 color: 'var(--fg)',
+                y: 0,
+                filter: 'blur(0px)',
                 stagger: 0.03,
                 scrollTrigger: {
                     trigger: heading,
@@ -387,6 +383,10 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
     }
 });
 
+initParagraphReveals();
+initParallax();
+initColorTransitions(cursorRipple);
+
 // ===== 3. (Glow effects removed — cards use 3D flip now) =====
 
 // ===== 4. Scroll-velocity skew on project items =====
@@ -398,15 +398,18 @@ lenis.on('scroll', ({ velocity }) => {
 });
 
 // ===== 5. Marquee scroll-responsive speed =====
+// Use Web Animations API playbackRate to avoid animation reset on duration change
 const marqueeTrack = document.querySelector('.marquee-track');
-let baseMarqueeDuration = 30;
+if (marqueeTrack) {
+    const marqueeAnimations = marqueeTrack.getAnimations();
+    let marqueeRate = 1;
 
-lenis.on('scroll', ({ velocity }) => {
-    if (marqueeTrack) {
-        const speed = 1 + Math.abs(velocity) * 0.003;
-        marqueeTrack.style.animationDuration = (baseMarqueeDuration / speed) + 's';
-    }
-});
+    lenis.on('scroll', ({ velocity }) => {
+        const target = 1 + Math.abs(velocity) * 0.15;
+        marqueeRate += (target - marqueeRate) * 0.1;
+        marqueeAnimations.forEach(a => { a.playbackRate = marqueeRate; });
+    });
+}
 
 // ===== Scroll-triggered reveal (IntersectionObserver with stagger) =====
 const observer = new IntersectionObserver(entries => {
