@@ -46,21 +46,42 @@ const _worldPos = new Vector3();
 
 // ===== Preloader =====
 const preloader = document.getElementById('preloader');
-const preloaderBrand = document.getElementById('preloaderBrand');
 const preloaderCounter = document.getElementById('preloaderCounter');
 const preloaderLine = document.getElementById('preloaderLine');
+const scanLine = document.getElementById('scanLine');
+const ka1oChars = document.querySelectorAll('.ka1o-char');
 
 document.body.classList.add('is-loading');
-
-// Brand text scramble
-textScramble(preloaderBrand, 'rithmic.co', 1000);
 
 let textureReady = false;
 let fontsReady = false;
 let loadProgress = 0;
 let displayedProgress = 0;
-const MIN_DISPLAY_TIME = 1400;
+const MIN_DISPLAY_TIME = 2200;
 const preloaderStart = performance.now();
+
+// Phase 1: Scan line expands (starts immediately)
+setTimeout(() => {
+    scanLine.classList.add('animate');
+}, 100);
+
+// Phase 2: Letters split-reveal from scan line
+setTimeout(() => {
+    ka1oChars.forEach((char, i) => {
+        setTimeout(() => {
+            char.classList.add('animate');
+        }, i * 100);
+    });
+    // Show counter after letters start appearing
+    setTimeout(() => {
+        preloaderCounter.classList.add('visible');
+    }, 300);
+}, 750);
+
+// Phase 3: Scan line fades out
+setTimeout(() => {
+    scanLine.classList.add('fade-out');
+}, 1800);
 
 function updateCounter(value) {
     displayedProgress = value;
@@ -88,7 +109,6 @@ function checkReady() {
         if (t < 1) {
             requestAnimationFrame(tickCounter);
         } else {
-            // Exit preloader
             setTimeout(exitPreloader, 200);
         }
     }
@@ -99,12 +119,10 @@ function exitPreloader() {
     preloader.classList.add('exit');
     document.body.classList.remove('is-loading');
 
-    // Trigger hero animation after preloader starts sliding
     setTimeout(() => {
         if (heroSplitTl) heroSplitTl.play();
     }, 300);
 
-    // Remove preloader from DOM after transition
     preloader.addEventListener('transitionend', () => {
         preloader.remove();
     }, { once: true });

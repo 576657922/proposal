@@ -595,26 +595,97 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 24px;
 }
 
-.preloader-brand {
+/* ka1o logo */
+.ka1o-logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    overflow: visible;
+}
+
+.ka1o-char {
     font-family: var(--font);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--muted);
-    min-height: 1.2em;
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 600;
+    color: var(--fg);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    display: inline-block;
+    clip-path: inset(50% 0 50% 0);
+    opacity: 0;
 }
 
+.ka1o-accent {
+    color: var(--accent);
+    font-weight: 300;
+}
+
+/* Scan line */
+.scan-line {
+    position: absolute;
+    top: 50%;
+    left: -20vw;
+    right: -20vw;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: center;
+    z-index: 1;
+}
+
+/* Animation states triggered by JS */
+.scan-line.animate {
+    animation: scanExpand 0.7s var(--ease-in-out) forwards;
+}
+
+.ka1o-char.animate {
+    animation: splitReveal 0.7s var(--ease-out) forwards;
+}
+
+.scan-line.fade-out {
+    animation: scanFade 0.5s var(--ease-out) forwards;
+}
+
+@keyframes scanExpand {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes splitReveal {
+    from {
+        clip-path: inset(50% 0 50% 0);
+        opacity: 0;
+    }
+    to {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+    }
+}
+
+@keyframes scanFade {
+    to { opacity: 0; }
+}
+
+/* Counter — smaller, below logo */
 .preloader-counter {
     font-family: var(--font);
     font-weight: 300;
-    font-size: clamp(4rem, 10vw, 8rem);
-    color: var(--accent);
+    font-size: 14px;
+    color: var(--muted);
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3em;
     line-height: 1;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+}
+
+.preloader-counter.visible {
+    opacity: 1;
 }
 
 .preloader-line {
@@ -632,6 +703,12 @@ body.is-loading {
 }
 
 #loading { display: none; }
+
+/* Nav logo accent */
+.nav-logo-accent {
+    color: var(--accent);
+    font-weight: 300;
+}
 
 /* ===== Sections ===== */
 .section {
