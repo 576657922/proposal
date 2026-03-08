@@ -48,8 +48,7 @@ const _worldPos = new Vector3();
 const preloader = document.getElementById('preloader');
 const preloaderCounter = document.getElementById('preloaderCounter');
 const preloaderLine = document.getElementById('preloaderLine');
-const scanLine = document.getElementById('scanLine');
-const ka1oChars = document.querySelectorAll('.ka1o-char');
+const logoPaths = document.querySelectorAll('.logo-path');
 
 document.body.classList.add('is-loading');
 
@@ -60,28 +59,25 @@ let displayedProgress = 0;
 const MIN_DISPLAY_TIME = 2200;
 const preloaderStart = performance.now();
 
-// Phase 1: Scan line expands (starts immediately)
-setTimeout(() => {
-    scanLine.classList.add('animate');
-}, 100);
+// Measure each path and set up stroke-dash animation
+const drawTimings = [0, 0.12, 0.24, 0.5, 0.8, 1.0]; // stagger delays (seconds)
+const drawDurations = [0.5, 0.35, 0.35, 0.7, 0.4, 0.7]; // per-path duration
 
-// Phase 2: Letters split-reveal from scan line
+logoPaths.forEach((path, i) => {
+    const len = path.getTotalLength();
+    path.style.setProperty('--path-len', len);
+    path.style.setProperty('--draw-delay', drawTimings[i] + 's');
+    path.style.setProperty('--draw-dur', drawDurations[i] + 's');
+});
+
+// Start drawing after a brief pause
 setTimeout(() => {
-    ka1oChars.forEach((char, i) => {
-        setTimeout(() => {
-            char.classList.add('animate');
-        }, i * 100);
-    });
-    // Show counter after letters start appearing
+    logoPaths.forEach(p => p.classList.add('draw'));
+    // Show counter after logo starts drawing
     setTimeout(() => {
         preloaderCounter.classList.add('visible');
-    }, 300);
-}, 750);
-
-// Phase 3: Scan line fades out
-setTimeout(() => {
-    scanLine.classList.add('fade-out');
-}, 1800);
+    }, 600);
+}, 200);
 
 function updateCounter(value) {
     displayedProgress = value;

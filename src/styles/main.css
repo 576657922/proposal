@@ -318,9 +318,9 @@ body::before {
 }
 
 .nav-logo {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
     color: var(--fg);
     text-decoration: none;
 }
@@ -595,87 +595,36 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 32px;
 }
 
-/* ka1o logo */
-.ka1o-logo {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    overflow: visible;
-}
-
-.ka1o-char {
-    font-family: var(--font);
-    font-size: clamp(4rem, 12vw, 9rem);
-    font-weight: 600;
+/* SVG logo */
+.logo-svg {
+    width: clamp(140px, 28vw, 240px);
+    height: auto;
     color: var(--fg);
-    line-height: 1;
-    letter-spacing: 0.04em;
-    display: inline-block;
-    clip-path: inset(50% 0 50% 0);
-    opacity: 0;
 }
 
-.ka1o-accent {
-    color: var(--accent);
-    font-weight: 300;
+.logo-path {
+    stroke-dasharray: var(--path-len);
+    stroke-dashoffset: var(--path-len);
+    transition: none;
 }
 
-/* Scan line */
-.scan-line {
-    position: absolute;
-    top: 50%;
-    left: -20vw;
-    right: -20vw;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: center;
-    z-index: 1;
+.logo-path.draw {
+    animation: drawStroke var(--draw-dur, 0.6s) var(--ease-out) forwards;
+    animation-delay: var(--draw-delay, 0s);
 }
 
-/* Animation states triggered by JS */
-.scan-line.animate {
-    animation: scanExpand 0.7s var(--ease-in-out) forwards;
+@keyframes drawStroke {
+    to { stroke-dashoffset: 0; }
 }
 
-.ka1o-char.animate {
-    animation: splitReveal 0.7s var(--ease-out) forwards;
-}
-
-.scan-line.fade-out {
-    animation: scanFade 0.5s var(--ease-out) forwards;
-}
-
-@keyframes scanExpand {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-}
-
-@keyframes splitReveal {
-    from {
-        clip-path: inset(50% 0 50% 0);
-        opacity: 0;
-    }
-    to {
-        clip-path: inset(0 0 0 0);
-        opacity: 1;
-    }
-}
-
-@keyframes scanFade {
-    to { opacity: 0; }
-}
-
-/* Counter — smaller, below logo */
+/* Counter */
 .preloader-counter {
     font-family: var(--font);
     font-weight: 300;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.3em;
@@ -703,12 +652,6 @@ body.is-loading {
 }
 
 #loading { display: none; }
-
-/* Nav logo accent */
-.nav-logo-accent {
-    color: var(--accent);
-    font-weight: 300;
-}
 
 /* ===== Sections ===== */
 .section {

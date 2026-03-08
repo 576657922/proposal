@@ -15,13 +15,18 @@
     <!-- Preloader -->
     <div class="preloader" id="preloader">
         <div class="preloader-content">
-            <div class="ka1o-logo" id="ka1oLogo">
-                <div class="scan-line" id="scanLine"></div>
-                <span class="ka1o-char" data-char="k">k</span>
-                <span class="ka1o-char" data-char="a">a</span>
-                <span class="ka1o-char ka1o-accent" data-char="1">1</span>
-                <span class="ka1o-char" data-char="o">o</span>
-            </div>
+            <svg class="logo-svg" id="logoSvg" viewBox="0 0 120 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- k -->
+                <path class="logo-path" d="M 4,2 V 46" />
+                <path class="logo-path" d="M 4,24 L 30,4" />
+                <path class="logo-path" d="M 4,24 L 30,46" />
+                <!-- a -->
+                <path class="logo-path" d="M 62,46 V 18 C 62,6 38,6 38,22 C 38,38 50,46 62,36" />
+                <!-- 1 -->
+                <path class="logo-path" d="M 74,8 V 46" />
+                <!-- o -->
+                <path class="logo-path" d="M 100,10 C 89,10 84,19 84,28 C 84,37 89,46 100,46 C 111,46 116,37 116,28 C 116,19 111,10 100,10 Z" />
+            </svg>
             <span class="preloader-counter" id="preloaderCounter">000</span>
         </div>
         <div class="preloader-line" id="preloaderLine"></div>
@@ -55,7 +60,7 @@
 
     <!-- Navigation -->
     <nav class="site-nav">
-        <a href="#" class="nav-logo">ka<span class="nav-logo-accent">1</span>o</a>
+        <a href="#" class="nav-logo">ka1o</a>
         <div class="nav-links">
             <a href="#about" data-i18n="nav.about">About</a>
             <a href="#work" data-i18n="nav.work">Work</a>
@@ -275,7 +280,7 @@
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-inner">
-            <span class="footer-logo">ka<span class="nav-logo-accent">1</span>o</span>
+            <span class="footer-logo">ka1o</span>
             <span class="footer-copy">© 2026</span>
         </div>
     </footer>
