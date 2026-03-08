@@ -232,6 +232,98 @@
         </div>
     </div>
 
+    <!-- Card back SVG pattern (reusable) -->
+    <svg class="svg-defs" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+        <symbol id="cardBack" viewBox="0 0 200 280" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Inner frame -->
+            <rect x="14" y="14" width="172" height="252" rx="8" stroke-width="1" opacity="0.3"/>
+            <!-- Corner circles -->
+            <circle cx="26" cy="26" r="5" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="174" cy="26" r="5" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="26" cy="254" r="5" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="174" cy="254" r="5" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="26" cy="26" r="1.5" fill="currentColor" opacity="0.2"/>
+            <circle cx="174" cy="26" r="1.5" fill="currentColor" opacity="0.2"/>
+            <circle cx="26" cy="254" r="1.5" fill="currentColor" opacity="0.2"/>
+            <circle cx="174" cy="254" r="1.5" fill="currentColor" opacity="0.2"/>
+            <!-- Corner diagonals -->
+            <line x1="30" y1="30" x2="52" y2="52" stroke-width="0.5" opacity="0.15"/>
+            <line x1="170" y1="30" x2="148" y2="52" stroke-width="0.5" opacity="0.15"/>
+            <line x1="30" y1="250" x2="52" y2="228" stroke-width="0.5" opacity="0.15"/>
+            <line x1="170" y1="250" x2="148" y2="228" stroke-width="0.5" opacity="0.15"/>
+            <!-- Corner triangles -->
+            <path d="M22 18 L38 18 L18 38 L18 22 Z" stroke-width="0.5" opacity="0.08" fill="currentColor" fill-opacity="0.04"/>
+            <path d="M178 18 L162 18 L182 38 L182 22 Z" stroke-width="0.5" opacity="0.08" fill="currentColor" fill-opacity="0.04"/>
+            <path d="M22 262 L38 262 L18 242 L18 258 Z" stroke-width="0.5" opacity="0.08" fill="currentColor" fill-opacity="0.04"/>
+            <path d="M178 262 L162 262 L182 242 L182 258 Z" stroke-width="0.5" opacity="0.08" fill="currentColor" fill-opacity="0.04"/>
+            <!-- Dot chain — top -->
+            <circle cx="50" cy="14" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="75" cy="14" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="100" cy="14" r="1.5" fill="currentColor" opacity="0.15"/>
+            <circle cx="125" cy="14" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="150" cy="14" r="1" fill="currentColor" opacity="0.1"/>
+            <!-- Dot chain — bottom -->
+            <circle cx="50" cy="266" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="75" cy="266" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="100" cy="266" r="1.5" fill="currentColor" opacity="0.15"/>
+            <circle cx="125" cy="266" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="150" cy="266" r="1" fill="currentColor" opacity="0.1"/>
+            <!-- Dot chain — left -->
+            <circle cx="14" cy="70" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="14" cy="105" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="14" cy="140" r="1.5" fill="currentColor" opacity="0.15"/>
+            <circle cx="14" cy="175" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="14" cy="210" r="1" fill="currentColor" opacity="0.1"/>
+            <!-- Dot chain — right -->
+            <circle cx="186" cy="70" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="186" cy="105" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="186" cy="140" r="1.5" fill="currentColor" opacity="0.15"/>
+            <circle cx="186" cy="175" r="1" fill="currentColor" opacity="0.1"/>
+            <circle cx="186" cy="210" r="1" fill="currentColor" opacity="0.1"/>
+            <!-- Outer diamond -->
+            <path d="M100 34 L172 140 L100 246 L28 140 Z" stroke-width="0.7" opacity="0.12"/>
+            <!-- Inner diamond -->
+            <path d="M100 62 L150 140 L100 218 L50 140 Z" stroke-width="0.6" opacity="0.08"/>
+            <!-- Cross lines -->
+            <line x1="28" y1="140" x2="172" y2="140" stroke-width="0.3" opacity="0.06"/>
+            <line x1="100" y1="34" x2="100" y2="246" stroke-width="0.3" opacity="0.06"/>
+            <!-- Top chevron -->
+            <path d="M84 50 L100 36 L116 50" stroke-width="1" opacity="0.22" fill="none"/>
+            <path d="M88 58 L100 46 L112 58" stroke-width="0.6" opacity="0.12" fill="none"/>
+            <!-- Bottom chevron -->
+            <path d="M84 230 L100 244 L116 230" stroke-width="1" opacity="0.22" fill="none"/>
+            <path d="M88 222 L100 234 L112 222" stroke-width="0.6" opacity="0.12" fill="none"/>
+            <!-- Left chevron -->
+            <path d="M38 124 L24 140 L38 156" stroke-width="1" opacity="0.22" fill="none"/>
+            <path d="M46 128 L34 140 L46 152" stroke-width="0.6" opacity="0.12" fill="none"/>
+            <!-- Right chevron -->
+            <path d="M162 124 L176 140 L162 156" stroke-width="1" opacity="0.22" fill="none"/>
+            <path d="M154 128 L166 140 L154 152" stroke-width="0.6" opacity="0.12" fill="none"/>
+            <!-- Cardinal dots -->
+            <circle cx="100" cy="40" r="3" stroke-width="0.8" opacity="0.18"/>
+            <circle cx="100" cy="240" r="3" stroke-width="0.8" opacity="0.18"/>
+            <circle cx="34" cy="140" r="3" stroke-width="0.8" opacity="0.18"/>
+            <circle cx="166" cy="140" r="3" stroke-width="0.8" opacity="0.18"/>
+            <!-- Central shield badge -->
+            <path d="M100 104 C100 104 134 112 134 140 C134 164 100 180 100 180 C100 180 66 164 66 140 C66 112 100 104 100 104 Z" stroke-width="1.2" opacity="0.22"/>
+            <!-- Inner circle -->
+            <circle cx="100" cy="140" r="20" stroke-width="0.8" opacity="0.15"/>
+            <!-- Arcs -->
+            <path d="M70 90 Q100 76 130 90" stroke-width="0.6" opacity="0.1" fill="none"/>
+            <path d="M70 190 Q100 204 130 190" stroke-width="0.6" opacity="0.1" fill="none"/>
+            <!-- Diamond midpoint dots -->
+            <circle cx="64" cy="87" r="1.5" fill="currentColor" opacity="0.08"/>
+            <circle cx="136" cy="87" r="1.5" fill="currentColor" opacity="0.08"/>
+            <circle cx="64" cy="193" r="1.5" fill="currentColor" opacity="0.08"/>
+            <circle cx="136" cy="193" r="1.5" fill="currentColor" opacity="0.08"/>
+            <!-- Small diamonds -->
+            <path d="M50 56 L56 50 L62 56 L56 62 Z" stroke-width="0.5" opacity="0.1"/>
+            <path d="M138 56 L144 50 L150 56 L144 62 Z" stroke-width="0.5" opacity="0.1"/>
+            <path d="M50 224 L56 218 L62 224 L56 230 Z" stroke-width="0.5" opacity="0.1"/>
+            <path d="M138 224 L144 218 L150 224 L144 230 Z" stroke-width="0.5" opacity="0.1"/>
+        </symbol>
+    </svg>
+
     <!-- Skills -->
     <section id="skills" class="section">
         <div class="section-inner">
@@ -239,24 +331,60 @@
             <h2 class="reveal" data-scramble="What I work with" data-i18n-scramble="skills.heading"> </h2>
             <div class="skills-grid">
                 <div class="skill-cell reveal-scale">
-                    <span class="skill-number">01</span>
-                    <h3 data-scramble="Frontend" data-i18n-scramble="skills.title1"> </h3>
-                    <p data-i18n="skills.desc1">Next.js, React, TypeScript — responsive UIs, landing pages, and interactive web apps with a focus on performance.</p>
+                    <div class="card-inner">
+                        <div class="card-face card-back">
+                            <svg class="card-pattern"><use href="#cardBack"/></svg>
+                            <span class="card-back-logo">ka1o</span>
+                            <span class="card-back-num">01</span>
+                        </div>
+                        <div class="card-face card-front">
+                            <span class="skill-number">01</span>
+                            <h3 data-scramble="Frontend" data-i18n-scramble="skills.title1"> </h3>
+                            <p data-i18n="skills.desc1">Next.js, React, TypeScript — responsive UIs, landing pages, and interactive web apps with a focus on performance.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="skill-cell reveal-scale">
-                    <span class="skill-number">02</span>
-                    <h3 data-scramble="Backend" data-i18n-scramble="skills.title2"> </h3>
-                    <p data-i18n="skills.desc2">Supabase, PostgreSQL, Node.js — authentication, CRUD features, admin dashboards, and API integration.</p>
+                    <div class="card-inner">
+                        <div class="card-face card-back">
+                            <svg class="card-pattern"><use href="#cardBack"/></svg>
+                            <span class="card-back-logo">ka1o</span>
+                            <span class="card-back-num">02</span>
+                        </div>
+                        <div class="card-face card-front">
+                            <span class="skill-number">02</span>
+                            <h3 data-scramble="Backend" data-i18n-scramble="skills.title2"> </h3>
+                            <p data-i18n="skills.desc2">Supabase, PostgreSQL, Node.js — authentication, CRUD features, admin dashboards, and API integration.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="skill-cell reveal-scale">
-                    <span class="skill-number">03</span>
-                    <h3 data-scramble="Enterprise" data-i18n-scramble="skills.title3"> </h3>
-                    <p data-i18n="skills.desc3">Java, Spring Boot — structured systems built for long-term maintenance and reliability, not just quick fixes.</p>
+                    <div class="card-inner">
+                        <div class="card-face card-back">
+                            <svg class="card-pattern"><use href="#cardBack"/></svg>
+                            <span class="card-back-logo">ka1o</span>
+                            <span class="card-back-num">03</span>
+                        </div>
+                        <div class="card-face card-front">
+                            <span class="skill-number">03</span>
+                            <h3 data-scramble="Enterprise" data-i18n-scramble="skills.title3"> </h3>
+                            <p data-i18n="skills.desc3">Java, Spring Boot — structured systems built for long-term maintenance and reliability, not just quick fixes.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="skill-cell reveal-scale">
-                    <span class="skill-number">04</span>
-                    <h3 data-scramble="Refactoring" data-i18n-scramble="skills.title4"> </h3>
-                    <p data-i18n="skills.desc4">Extending existing codebases, fixing UI and logic issues, and adjusting implementations to match real requirements.</p>
+                    <div class="card-inner">
+                        <div class="card-face card-back">
+                            <svg class="card-pattern"><use href="#cardBack"/></svg>
+                            <span class="card-back-logo">ka1o</span>
+                            <span class="card-back-num">04</span>
+                        </div>
+                        <div class="card-face card-front">
+                            <span class="skill-number">04</span>
+                            <h3 data-scramble="Refactoring" data-i18n-scramble="skills.title4"> </h3>
+                            <p data-i18n="skills.desc4">Extending existing codebases, fixing UI and logic issues, and adjusting implementations to match real requirements.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
 import { toggleLang, getCurrentLang } from './i18n.js';
+import { CursorRipple } from './cursor-ripple.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -38,6 +39,16 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // Initialize scroll-driven zoom
 initScrollControls();
+
+// ===== Cursor glow trail (Lusion-style) =====
+const cursorRipple = new CursorRipple(null, {
+    color: '232,255,71',   // accent #e8ff47
+    trailLength: 50,       // max trail points
+    pointLife: 800,         // ms per point
+    baseRadius: 60,         // glow radius px
+    intensity: 0.4,         // peak alpha
+    velocityScale: 2.5,     // radius boost from speed
+});
 
 let globePoints = null;
 let markerGroup = null;
@@ -169,6 +180,7 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    cursorRipple.resize(window.innerWidth, window.innerHeight);
 });
 
 // ===== Language toggle =====
@@ -296,63 +308,54 @@ magneticEls.forEach(el => {
     });
 });
 
-// ===== Skill-cell tilt effect =====
+// ===== Card flip on click =====
 document.querySelectorAll('.skill-cell').forEach(cell => {
-    let rect = null;
-
-    cell.addEventListener('mouseenter', () => {
-        rect = cell.getBoundingClientRect();
-    });
-
-    cell.addEventListener('mousemove', (e) => {
-        if (!rect) return;
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        gsap.to(cell, {
-            rotateY: x * 12,
-            rotateX: -y * 12,
-            transformPerspective: 600,
-            duration: 0.3,
-            ease: 'power1.out',
-        });
-    });
-
-    cell.addEventListener('mouseleave', () => {
-        rect = null;
-        gsap.to(cell, {
-            rotateY: 0,
-            rotateX: 0,
-            duration: 0.6,
-            ease: 'elastic.out(1, 0.5)',
-        });
+    cell.addEventListener('click', () => {
+        cell.classList.toggle('flipped');
     });
 });
 
-// ===== 1. Skills card fan spread on scroll =====
+// ===== 1. Skills card fan → spread on scroll =====
 const skillCells = gsap.utils.toArray('.skill-cell');
 if (skillCells.length === 4 && window.innerWidth > 900) {
     const skillsGrid = document.querySelector('.skills-grid');
 
-    // Initial stacked state
-    gsap.set(skillCells, {
-        position: 'relative',
+    // Remove IntersectionObserver reveal — GSAP handles entrance
+    skillCells.forEach(cell => {
+        cell.classList.remove('reveal-scale');
+        cell.style.opacity = '1';
+        cell.style.filter = 'none';
+    });
+
+    // Measure each card's center relative to the row center
+    const gr = skillsGrid.getBoundingClientRect();
+    const gcx = gr.width / 2;
+
+    // Fan rotations — like a hand of playing cards held from bottom
+    const fanRotations = [-20, -7, 7, 20];
+
+    const fanTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: skillsGrid,
+            start: 'top 90%',
+            end: 'top 10%',
+            scrub: 1,
+        }
     });
 
     skillCells.forEach((cell, i) => {
-        gsap.from(cell, {
-            rotation: (i - 1.5) * 8,
-            scale: 0.85,
-            y: (i - 1.5) * -15,
-            opacity: 0,
+        const cr = cell.getBoundingClientRect();
+        const ccx = cr.left - gr.left + cr.width / 2;
+
+        // Stack all cards in center, fan from bottom pivot
+        fanTl.from(cell, {
+            x: gcx - ccx,
+            rotation: fanRotations[i],
+            transformOrigin: '50% 140%',
+            scale: 0.92,
+            zIndex: 4 - Math.abs(i - 1.5),
             duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: skillsGrid,
-                start: 'top 80%',
-                end: 'top 30%',
-                scrub: 1,
-            },
-        });
+        }, 0);
     });
 }
 
@@ -384,24 +387,7 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
     }
 });
 
-// ===== 3. Skill card cursor-tracking border glow =====
-if (isPointerDevice) {
-    document.querySelectorAll('.skill-cell').forEach(cell => {
-        cell.addEventListener('mousemove', (e) => {
-            const rect = cell.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            const angle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI) + 180;
-            cell.style.setProperty('--glow-angle', angle + 'deg');
-
-            // Spotlight position
-            const px = ((e.clientX - rect.left) / rect.width) * 100;
-            const py = ((e.clientY - rect.top) / rect.height) * 100;
-            cell.style.setProperty('--spot-x', px + '%');
-            cell.style.setProperty('--spot-y', py + '%');
-        });
-    });
-}
+// ===== 3. (Glow effects removed — cards use 3D flip now) =====
 
 // ===== 4. Scroll-velocity skew on project items =====
 let skewTarget = 0;
@@ -658,6 +644,9 @@ function animate(time) {
     }
 
     renderer.render(scene, camera);
+
+    // Draw cursor glow trail overlay (separate Canvas 2D layer)
+    cursorRipple.update();
 }
 
 // Pause animation when tab is hidden

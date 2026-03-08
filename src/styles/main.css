@@ -4,11 +4,7 @@
     initial-value: 40px;
 }
 
-@property --glow-angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-}
+
 
 :root {
     --bg: #0a0a0a;
@@ -983,67 +979,137 @@ body.is-loading {
 
 /* ===== Skills ===== */
 .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 28px;
+    overflow: visible;
 }
 
 .skill-cell {
     position: relative;
-    padding: 40px;
-    background: var(--bg);
-    transition: background var(--duration-slow) var(--ease-out),
-                box-shadow var(--duration-slow) var(--ease-out);
-    will-change: transform;
-    isolation: isolate;
+    width: 260px;
+    height: 380px;
+    flex-shrink: 0;
+    perspective: 1000px;
+    cursor: pointer;
 }
 
-.skill-cell:hover {
-    background: var(--bg-raised);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+/* 3D card flip container */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Cursor-tracking spotlight + rotating border glow on hover */
-.skill-cell::after {
-    content: '';
+.skill-cell.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Shared face styles */
+.card-face {
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-        circle at var(--spot-x, 50%) var(--spot-y, 50%),
-        rgba(232,255,71,0.06),
-        transparent 60%
-    );
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    overflow: hidden;
 }
 
-.skill-cell:hover::after {
-    opacity: 1;
+/* ---- Card back (decorative) ---- */
+.card-back {
+    background: var(--bg-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(255,255,255,0.06),
+        0 4px 24px rgba(0,0,0,0.25);
 }
 
-.skill-cell::before {
-    content: '';
+.card-pattern {
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: conic-gradient(
-        from var(--glow-angle, 0deg),
-        transparent 0%,
-        var(--accent) 8%,
-        transparent 16%
-    );
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.4s;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--fg);
 }
 
-.skill-cell:hover::before {
-    opacity: 1;
+.card-back-logo {
+    position: relative;
+    z-index: 1;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--fg);
+    opacity: 0.3;
+}
+
+.card-back-num {
+    position: absolute;
+    top: 20px;
+    left: 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 1px;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+/* Hover glow on card back */
+.skill-cell:not(.flipped):hover .card-back {
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(255,255,255,0.1),
+        0 16px 48px rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.18);
+}
+
+/* ---- Card front (content) ---- */
+.card-front {
+    transform: rotateY(180deg);
+    background: var(--bg-raised);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(255,255,255,0.06),
+        0 4px 24px rgba(0,0,0,0.25);
+}
+
+/* Glow on flipped card */
+.skill-cell.flipped:hover .card-front {
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(255,255,255,0.1),
+        0 16px 48px rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.18);
+}
+
+/* Flip hint indicator */
+.card-back::after {
+    content: 'Click to flip';
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.skill-cell:hover .card-back::after {
+    opacity: 0.6;
 }
 
 /* Heading char reveal base */
@@ -1052,33 +1118,27 @@ body.is-loading {
 }
 
 .skill-number {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--accent);
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     display: block;
-    margin-bottom: 16px;
-    position: relative;
-    z-index: 1;
+    margin-bottom: 20px;
 }
 
 .skill-cell h3 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 500;
     letter-spacing: -0.01em;
     margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
 }
 
 .skill-cell p {
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-size: 0.88rem;
+    line-height: 1.65;
     color: var(--muted);
     max-width: none;
     margin-bottom: 0;
-    position: relative;
-    z-index: 1;
 }
 
 /* ===== Contact ===== */
@@ -1298,7 +1358,15 @@ body.is-loading {
     }
 
     .skills-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .skill-cell {
+        width: 100%;
+        max-width: 300px;
+        height: 400px;
     }
 
     .project-item {
