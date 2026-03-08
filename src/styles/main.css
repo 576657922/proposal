@@ -68,6 +68,8 @@ body::after {
     z-index: 10001;
     animation: scroll-progress linear;
     animation-timeline: scroll(root);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent),
+                0 2px 16px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 @keyframes scroll-progress {
@@ -438,7 +440,6 @@ body::before {
     color: var(--muted);
     margin-bottom: 24px;
     opacity: 0;
-    animation: fadeSlideUp 1s 0.3s var(--ease-out) forwards;
 }
 
 /* Hero title with line reveal */
@@ -465,11 +466,8 @@ body::before {
     display: inline-block;
     opacity: 0;
     transform: translateY(100%);
-    animation: revealLine var(--duration-reveal) var(--ease-out) forwards;
+    /* animation removed — GSAP SplitType handles reveal */
 }
-
-.hero-title .line:nth-child(1) span { animation-delay: 0.5s; }
-.hero-title .line:nth-child(3) span { animation-delay: 0.7s; }
 
 /* Hero subtitle */
 .hero-sub {
@@ -477,8 +475,6 @@ body::before {
     line-height: 1.7;
     color: #999;
     max-width: 480px;
-    opacity: 0;
-    animation: fadeSlideUp 1s 1.3s var(--ease-out) forwards;
 }
 
 /* Scroll indicator (vertical) */
@@ -1217,10 +1213,21 @@ body.is-loading {
     color: var(--accent);
 }
 
+/* ===== Section dividers ===== */
+.section-divider {
+    max-width: 1100px;
+    margin: 0 auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+}
+
 /* ===== Footer ===== */
 .site-footer {
     padding: 32px 40px;
     border-top: 1px solid var(--border);
+    overflow: hidden;
 }
 
 .footer-inner {

@@ -11,7 +11,7 @@ import { toggleLang, getCurrentLang } from './i18n.js';
 import { CursorRipple } from './cursor-ripple.js';
 import { initAnimatedGrain } from './grain.js';
 import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
-import { initStaggerReveals, initParallax, initColorTransitions, initParagraphReveals } from './scroll-effects.js';
+import { initStaggerReveals, initParallax, initColorTransitions, initParagraphReveals, initSectionDividers, initFooterReveal } from './scroll-effects.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -58,13 +58,20 @@ initAnimatedGrain();
 let globePoints = null;
 let markerGroup = null;
 let heroSplitTl = null;
+let heroSubTl = null;
 let currentSpinAngle = 0;
+let normalizedMx = 0, normalizedMy = 0;
+
+const sceneRefs = { globePoints: null, atmosMesh: null };
 
 // Pre-allocated objects for animation loop (avoid per-frame GC)
 const _spinQuat = new Quaternion();
 const _finalQuat = new Quaternion();
 const _yAxis = new Vector3(0, 1, 0);
 const _worldPos = new Vector3();
+const _mouseTiltQuat = new Quaternion();
+const _tempQuat = new Quaternion();
+const _xAxis = new Vector3(1, 0, 0);
 
 // ===== Preloader =====
 const preloader = document.getElementById('preloader');
@@ -134,6 +141,12 @@ function checkReady() {
 }
 
 function exitPreloader() {
+    // 2a: Accent flash on preloader line before exit
+    gsap.to(preloaderLine, {
+        boxShadow: '0 0 20px rgba(232,255,71,0.8), 0 0 40px rgba(232,255,71,0.4)',
+        duration: 0.3, yoyo: true, repeat: 1,
+    });
+
     preloader.classList.add('exit');
     document.body.classList.remove('is-loading');
 
@@ -141,10 +154,36 @@ function exitPreloader() {
         if (heroSplitTl) heroSplitTl.play();
     }, 300);
 
+    // Feature 1: Hero subtitle word cascade after delay
+    setTimeout(() => { if (heroSubTl) heroSubTl.play(); }, 2000);
+
     if (globePoints) {
         gsap.to(globePoints.material.uniforms.uBrightness, {
             value: 1.0, duration: 1.8, ease: 'power2.out'
         });
+
+        // 2b: Globe bloom scale pulse
+        gsap.fromTo(globePoints.scale,
+            { x: 0.95, y: 0.95, z: 0.95 },
+            { x: 1.0, y: 1.0, z: 1.0, duration: 1.5, ease: 'elastic.out(1, 0.4)' }
+        );
+    }
+
+    // 2c: Atmosphere intensity bloom
+    if (sceneRefs.atmosMesh) {
+        gsap.fromTo(sceneRefs.atmosMesh.material.uniforms.uIntensity,
+            { value: 2.5 },
+            { value: 1.0, duration: 2.0, ease: 'power2.out' }
+        );
+    }
+
+    // 2d: Hero label letter-spacing animation
+    const heroLabel = document.querySelector('.hero-label');
+    if (heroLabel) {
+        gsap.fromTo(heroLabel,
+            { opacity: 0, letterSpacing: '0.6em' },
+            { opacity: 1, letterSpacing: '0.15em', duration: 1.2, ease: 'power3.out', delay: 0.5 }
+        );
     }
 
     preloader.addEventListener('transitionend', () => {
@@ -165,8 +204,10 @@ textureLoader.load(
     '/textures/earth_specular.jpg',
     (texture) => {
         globePoints = createGlobe(texture);
-        createAtmosphere();
+        const atmosMesh = createAtmosphere();
         markerGroup = createAvatarMarker(globePoints);
+        sceneRefs.globePoints = globePoints;
+        sceneRefs.atmosMesh = atmosMesh;
         textureReady = true;
         checkReady();
     },
@@ -179,8 +220,10 @@ textureLoader.load(
     () => {
         console.warn('Texture load failed, rendering without texture');
         globePoints = createGlobe(null);
-        createAtmosphere();
+        const atmosMesh = createAtmosphere();
         markerGroup = createAvatarMarker(globePoints);
+        sceneRefs.globePoints = globePoints;
+        sceneRefs.atmosMesh = atmosMesh;
         textureReady = true;
         checkReady();
     }
@@ -250,6 +293,9 @@ if (isPointerDevice) {
         my = e.clientY;
         cross.style.setProperty('--cx', mx + 'px');
         cross.style.setProperty('--cy', my + 'px');
+        // Normalized mouse coords for parallax (-1 to 1)
+        normalizedMx = (mx / window.innerWidth) * 2 - 1;
+        normalizedMy = (my / window.innerHeight) * 2 - 1;
     });
 
     // Hover links — brackets expand + accent
@@ -385,7 +431,9 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
 initParagraphReveals();
 initParallax();
-initColorTransitions(cursorRipple);
+initColorTransitions(cursorRipple, sceneRefs);
+initSectionDividers();
+initFooterReveal();
 
 // ===== 3. (Glow effects removed — cards use 3D flip now) =====
 
@@ -499,6 +547,18 @@ if (heroTitle) {
     });
 }
 
+// Hero subtitle word cascade
+const heroSub = document.querySelector('.hero-sub');
+if (heroSub) {
+    heroSub.style.animation = 'none';
+    const subSplit = new SplitType(heroSub, { types: 'words', wordClass: 'split-word' });
+    gsap.set(subSplit.words, { y: 20, opacity: 0, filter: 'blur(3px)' });
+    heroSubTl = gsap.to(subSplit.words, {
+        y: 0, opacity: 1, filter: 'blur(0px)',
+        stagger: 0.04, duration: 0.8, ease: 'power3.out', paused: true,
+    });
+}
+
 // ===== Scroll-driven elements =====
 const heroMain = document.querySelector('.ui-layer main');
 const heroAction = document.querySelector('.action-area');
@@ -514,8 +574,8 @@ lenis.on('scroll', () => {
     const scrollProgress = getScrollProgress();
     const s = window.scrollY;
 
-    // Hero text parallax
-    if (heroMain) {
+    // Hero text parallax (non-pointer devices only; pointer devices handled in animation loop)
+    if (!isPointerDevice && heroMain) {
         const y = scrollProgress * -120;
         const opacity = Math.max(0, 1 - scrollProgress * 1.5);
         const scale = 1 - scrollProgress * 0.1;
@@ -601,6 +661,26 @@ function animate(time) {
         _spinQuat.setFromAxisAngle(_yAxis, currentSpinAngle);
         _finalQuat.copy(_spinQuat).slerp(japanQuaternion, scrollProgress);
         globePoints.quaternion.copy(_finalQuat);
+
+        // Feature 7: Ambient mouse tilt on globe
+        if (isPointerDevice && scrollProgress < 0.5) {
+            const fadeout = Math.max(0, 1 - scrollProgress * 2);
+            _mouseTiltQuat.setFromAxisAngle(_xAxis, normalizedMy * 0.04 * fadeout);
+            _tempQuat.setFromAxisAngle(_yAxis, normalizedMx * 0.04 * fadeout);
+            _mouseTiltQuat.multiply(_tempQuat);
+            globePoints.quaternion.multiply(_mouseTiltQuat);
+        }
+    }
+
+    // Feature 7: Hero text parallax with mouse offset (pointer devices)
+    if (isPointerDevice && heroMain && scrollProgress < 1) {
+        const fadeout = Math.max(0, 1 - scrollProgress * 1.5);
+        const textShiftX = -normalizedMx * 15 * fadeout;
+        const textShiftY = -normalizedMy * 10 * fadeout;
+        const y = scrollProgress * -120;
+        const s = 1 - scrollProgress * 0.1;
+        heroMain.style.transform = `translateY(${y}px) scale(${s}) translate(${textShiftX}px, ${textShiftY}px)`;
+        heroMain.style.opacity = Math.max(0, 1 - scrollProgress * 1.5);
     }
 
     // Marker: avatar fades in, ring/line fade out with scroll

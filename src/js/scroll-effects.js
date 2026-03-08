@@ -144,12 +144,47 @@ export function initParallax() {
 }
 
 /**
+ * Animate section dividers into view on scroll.
+ */
+export function initSectionDividers() {
+    gsap.utils.toArray('.section-divider').forEach(div => {
+        gsap.to(div, {
+            scaleX: 1, duration: 1.2, ease: 'power2.inOut',
+            scrollTrigger: { trigger: div, start: 'top 85%', toggleActions: 'play none none none' },
+        });
+    });
+}
+
+/**
+ * Footer inner content + social links reveal on scroll.
+ */
+export function initFooterReveal() {
+    const footer = document.querySelector('.site-footer');
+    if (!footer) return;
+    const inner = footer.querySelector('.footer-inner');
+    if (inner) {
+        gsap.fromTo(inner, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+            scrollTrigger: { trigger: footer, start: 'top 95%', toggleActions: 'play none none none' } });
+    }
+    // Social links bounce stagger
+    const socialLinks = gsap.utils.toArray('.social-links a');
+    if (socialLinks.length) {
+        gsap.set(socialLinks, { y: 30, opacity: 0 });
+        ScrollTrigger.batch(socialLinks, {
+            onEnter: batch => gsap.to(batch, { y: 0, opacity: 1, stagger: 0.1, duration: 0.6, ease: 'back.out(1.7)' }),
+            start: 'top 90%', once: true,
+        });
+    }
+}
+
+/**
  * Accent color transitions as user scrolls between sections.
  * Updates --accent CSS variable and cursorRipple color if provided.
  *
  * @param {import('./cursor-ripple.js').CursorRipple|null} cursorRipple
+ * @param {Object} refs - optional scene refs { globePoints, atmosMesh }
  */
-export function initColorTransitions(cursorRipple) {
+export function initColorTransitions(cursorRipple, refs = {}) {
     const defaultColor = '#e8ff47';
 
     const colorMap = [
@@ -177,6 +212,8 @@ export function initColorTransitions(cursorRipple) {
                 if (cursorRipple) {
                     cursorRipple.color = colorToRgb(interpolated);
                 }
+                if (refs.globePoints) refs.globePoints.material.uniforms.uColor.value.setStyle(interpolated);
+                if (refs.atmosMesh) refs.atmosMesh.material.uniforms.uColor.value.setStyle(interpolated);
             },
             onLeaveBack: () => {
                 // Reset to previous section's color (or default) when scrolling back up
@@ -184,6 +221,8 @@ export function initColorTransitions(cursorRipple) {
                 if (cursorRipple) {
                     cursorRipple.color = colorToRgb(prevColor);
                 }
+                if (refs.globePoints) refs.globePoints.material.uniforms.uColor.value.setStyle(prevColor);
+                if (refs.atmosMesh) refs.atmosMesh.material.uniforms.uColor.value.setStyle(prevColor);
             },
         });
     });
