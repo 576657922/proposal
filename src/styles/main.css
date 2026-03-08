@@ -4,6 +4,12 @@
     initial-value: 40px;
 }
 
+@property --glow-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
 :root {
     --bg: #0a0a0a;
     --bg-raised: #111111;
@@ -993,6 +999,7 @@ body.is-loading {
     transition: background var(--duration-slow) var(--ease-out),
                 box-shadow var(--duration-slow) var(--ease-out);
     will-change: transform;
+    isolation: isolate;
 }
 
 .skill-cell:hover {
@@ -1000,18 +1007,48 @@ body.is-loading {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Radial glow on hover */
+/* Cursor-tracking spotlight + rotating border glow on hover */
 .skill-cell::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(232,255,71,0.04), transparent 70%);
+    background: radial-gradient(
+        circle at var(--spot-x, 50%) var(--spot-y, 50%),
+        rgba(232,255,71,0.06),
+        transparent 60%
+    );
     opacity: 0;
     transition: opacity 0.5s;
+    pointer-events: none;
 }
 
 .skill-cell:hover::after {
     opacity: 1;
+}
+
+.skill-cell::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: conic-gradient(
+        from var(--glow-angle, 0deg),
+        transparent 0%,
+        var(--accent) 8%,
+        transparent 16%
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.skill-cell:hover::before {
+    opacity: 1;
+}
+
+/* Heading char reveal base */
+.heading-char {
+    display: inline-block;
 }
 
 .skill-number {

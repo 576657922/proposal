@@ -10,7 +10,10 @@ import { textScramble } from './text-scramble.js';
 import { toggleLang, getCurrentLang } from './i18n.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // ===== Lenis smooth scroll =====
 const lenis = new Lenis({
@@ -18,6 +21,9 @@ const lenis = new Lenis({
     wheelMultiplier: 0.8,
     smoothTouch: false,
 });
+
+// Sync Lenis with ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
 
 // Smooth scroll for anchor links via Lenis
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -322,6 +328,100 @@ document.querySelectorAll('.skill-cell').forEach(cell => {
     });
 });
 
+// ===== 1. Skills card fan spread on scroll =====
+const skillCells = gsap.utils.toArray('.skill-cell');
+if (skillCells.length === 4 && window.innerWidth > 900) {
+    const skillsGrid = document.querySelector('.skills-grid');
+
+    // Initial stacked state
+    gsap.set(skillCells, {
+        position: 'relative',
+    });
+
+    skillCells.forEach((cell, i) => {
+        gsap.from(cell, {
+            rotation: (i - 1.5) * 8,
+            scale: 0.85,
+            y: (i - 1.5) * -15,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: skillsGrid,
+                start: 'top 80%',
+                end: 'top 30%',
+                scrub: 1,
+            },
+        });
+    });
+}
+
+// ===== 2. Section headings — scroll-scrubbed character reveal =====
+document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEach(heading => {
+    // Wait for scramble to complete before splitting
+    const scrambleText = heading.getAttribute('data-scramble');
+    if (scrambleText) {
+        heading.textContent = scrambleText;
+    }
+
+    const split = new SplitType(heading, { types: 'chars', charClass: 'heading-char' });
+
+    if (split.chars && split.chars.length > 0) {
+        gsap.fromTo(split.chars,
+            { opacity: 0.12, color: 'var(--muted)' },
+            {
+                opacity: 1,
+                color: 'var(--fg)',
+                stagger: 0.03,
+                scrollTrigger: {
+                    trigger: heading,
+                    start: 'top 85%',
+                    end: 'top 45%',
+                    scrub: 1,
+                },
+            }
+        );
+    }
+});
+
+// ===== 3. Skill card cursor-tracking border glow =====
+if (isPointerDevice) {
+    document.querySelectorAll('.skill-cell').forEach(cell => {
+        cell.addEventListener('mousemove', (e) => {
+            const rect = cell.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const angle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI) + 180;
+            cell.style.setProperty('--glow-angle', angle + 'deg');
+
+            // Spotlight position
+            const px = ((e.clientX - rect.left) / rect.width) * 100;
+            const py = ((e.clientY - rect.top) / rect.height) * 100;
+            cell.style.setProperty('--spot-x', px + '%');
+            cell.style.setProperty('--spot-y', py + '%');
+        });
+    });
+}
+
+// ===== 4. Scroll-velocity skew on project items =====
+let skewTarget = 0;
+let currentSkew = 0;
+
+lenis.on('scroll', ({ velocity }) => {
+    skewTarget = Math.max(-6, Math.min(6, velocity * 0.25));
+});
+
+// ===== 5. Marquee scroll-responsive speed =====
+const marqueeTrack = document.querySelector('.marquee-track');
+let baseMarqueeDuration = 30;
+
+lenis.on('scroll', ({ velocity }) => {
+    if (marqueeTrack) {
+        const speed = 1 + Math.abs(velocity) * 0.003;
+        marqueeTrack.style.animationDuration = (baseMarqueeDuration / speed) + 's';
+    }
+});
+
 // ===== Scroll-triggered reveal (IntersectionObserver with stagger) =====
 const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {
@@ -488,6 +588,15 @@ function animate(time) {
             previewY += (previewTargetY - previewY) * 0.1;
             projectPreview.style.transform = `translate(${previewX}px, ${previewY}px)`;
         }
+    }
+
+    // Scroll-velocity skew on project items
+    currentSkew += (skewTarget - currentSkew) * 0.1;
+    skewTarget *= 0.95; // decay
+    if (Math.abs(currentSkew) > 0.01) {
+        projectItems.forEach(item => {
+            item.style.transform = `skewY(${currentSkew}deg)`;
+        });
     }
 
     // Three.js
