@@ -31,6 +31,9 @@ export class CursorRipple {
       container = null;
     }
 
+    // Skip on touch-only devices (no mouse pointer)
+    this.disabled = !matchMedia('(pointer: fine)').matches;
+
     this.color = opts.color || '232,255,71';
     this.trailLength = opts.trailLength || 50;
     this.pointLife = opts.pointLife || 800;
@@ -48,6 +51,8 @@ export class CursorRipple {
     this.vx = 0;
     this.vy = 0;
     this.active = false;
+
+    if (this.disabled) return; // No canvas, no events on touch devices
 
     // Create overlay canvas
     this.canvas = document.createElement('canvas');
@@ -131,6 +136,7 @@ export class CursorRipple {
 
   /** Call once per rAF. Does NOT call renderer.render — call that yourself. */
   update() {
+    if (this.disabled) return;
     const ctx = this.ctx;
     const dpr = this.dpr;
     const now = performance.now();
@@ -185,10 +191,12 @@ export class CursorRipple {
   }
 
   resize() {
+    if (this.disabled) return;
     this._resize();
   }
 
   dispose() {
+    if (this.disabled) return;
     window.removeEventListener('mousemove', this._onMove);
     window.removeEventListener('mouseleave', this._onLeave);
     window.removeEventListener('resize', this._onResize);
