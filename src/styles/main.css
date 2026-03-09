@@ -78,10 +78,6 @@ body::after {
 
 /* Film grain overlay — disabled, causes red tint on some GPUs */
 
-@media (pointer: fine) {
-    body::before { display: none; }
-}
-
 /* ===== Custom cursor — crosshair + corner brackets ===== */
 .cursor-cross {
     position: fixed;

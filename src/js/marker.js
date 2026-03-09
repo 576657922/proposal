@@ -1,6 +1,7 @@
 import {
     Group, Vector3, RingGeometry, MeshBasicMaterial, DoubleSide, Mesh,
-    BufferGeometry, LineBasicMaterial, Line, CanvasTexture, SpriteMaterial, Sprite
+    BufferGeometry, LineBasicMaterial, Line, CanvasTexture, SpriteMaterial, Sprite,
+    SRGBColorSpace
 } from 'three';
 import { CONFIG } from './config.js';
 
@@ -90,6 +91,8 @@ export function createAvatarMarker(globePoints) {
         ctx.stroke();
 
         const texture = new CanvasTexture(canvas);
+        texture.colorSpace = SRGBColorSpace;
+        texture.premultiplyAlpha = false;
         texture.needsUpdate = true;
 
         let avatarSprite = markerGroup.children.find(c => c.isSprite);
@@ -97,6 +100,7 @@ export function createAvatarMarker(globePoints) {
             const material = new SpriteMaterial({
                 map: texture,
                 transparent: true,
+                alphaTest: 0.01,
                 depthTest: false
             });
             avatarSprite = new Sprite(material);
