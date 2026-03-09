@@ -16,7 +16,7 @@ export function initAnimatedGrain() {
         height: 100%;
         z-index: 10000;
         mix-blend-mode: overlay;
-        opacity: 0.5;
+        opacity: 0.12;
         pointer-events: none;
     `;
     document.body.appendChild(canvas);
