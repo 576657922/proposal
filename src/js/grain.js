@@ -4,7 +4,7 @@
  */
 
 export function initAnimatedGrain() {
-    if (!matchMedia('(pointer: fine)').matches) return;
+    return; // disabled — mix-blend-mode causes red tint on some GPUs
 
     const canvas = document.createElement('canvas');
     canvas.width = 256;

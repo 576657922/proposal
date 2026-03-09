@@ -31,8 +31,8 @@ export class CursorRipple {
       container = null;
     }
 
-    // Skip on touch-only devices (no mouse pointer)
-    this.disabled = !matchMedia('(pointer: fine)').matches;
+    // Disabled — canvas overlay causes red tint on some GPUs
+    this.disabled = true;
 
     this.color = opts.color || '232,255,71';
     this.trailLength = opts.trailLength || 50;
