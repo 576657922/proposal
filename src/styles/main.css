@@ -76,7 +76,8 @@ body::after {
     to { transform: scaleX(1); }
 }
 
-/* Film grain overlay */
+/* Film grain overlay — temporarily disabled to diagnose red tint */
+/*
 body::before {
     content: '';
     position: fixed;
@@ -87,6 +88,7 @@ body::before {
     opacity: 0.5;
     mix-blend-mode: overlay;
 }
+*/
 
 @media (pointer: fine) {
     body::before { display: none; }

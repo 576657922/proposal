@@ -31,8 +31,9 @@ export class CursorRipple {
       container = null;
     }
 
-    // Skip on touch-only devices (no mouse pointer)
-    this.disabled = !matchMedia('(pointer: fine)').matches;
+    // DEBUG: temporarily disabled to diagnose red tint
+    this.disabled = true;
+    // this.disabled = !matchMedia('(pointer: fine)').matches;
 
     this.color = opts.color || '232,255,71';
     this.trailLength = opts.trailLength || 50;
