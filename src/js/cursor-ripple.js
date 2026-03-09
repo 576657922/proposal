@@ -64,7 +64,6 @@ export class CursorRipple {
       height: 100vh;
       pointer-events: none;
       z-index: 9998;
-      mix-blend-mode: screen;
     `;
     this.ctx = this.canvas.getContext('2d');
 
