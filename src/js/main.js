@@ -431,7 +431,7 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
 initParagraphReveals();
 initParallax();
-initColorTransitions(cursorRipple, sceneRefs);
+// Color transitions disabled — keeps default accent throughout
 initSectionDividers();
 initFooterReveal();
 
