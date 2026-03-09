@@ -4,7 +4,6 @@
  */
 
 export function initAnimatedGrain() {
-    return; // DEBUG: temporarily disabled to diagnose red tint
     if (!matchMedia('(pointer: fine)').matches) return;
 
     const canvas = document.createElement('canvas');
