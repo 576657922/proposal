@@ -1654,7 +1654,7 @@ body.is-loading {
     }
 
     .orb-1, .orb-2 {
-        opacity: 0.12;
+        opacity: 0.2;
     }
 
     /* Orbs are too large on mobile */
