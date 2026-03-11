@@ -975,7 +975,7 @@ body.is-loading {
     transform-style: preserve-3d;
     cursor: pointer;
     will-change: transform, opacity;
-    contain: layout style paint;
+    contain: layout style;
 }
 
 /* 3D card flip container */
@@ -1602,9 +1602,9 @@ body.is-loading {
     }
 
     .skill-cell {
-        width: 100%;
-        max-width: 320px;
-        height: 360px;
+        width: 260px;
+        max-width: 80vw;
+        height: 380px;
     }
 
     .project-item {
@@ -1853,8 +1853,9 @@ body.is-loading {
     }
 
     .skill-cell {
-        max-width: 100%;
-        height: 340px;
+        width: 240px;
+        max-width: 75vw;
+        height: 360px;
     }
 
     .card-front {
