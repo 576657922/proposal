@@ -343,10 +343,61 @@ projectItems.forEach((item, index) => {
 // ===== Magnetic buttons =====
 initMagneticButtons();
 
-// ===== Card flip on click =====
+// ===== Card flip on click — GSAP multi-phase =====
 document.querySelectorAll('.skill-cell').forEach(cell => {
+    let isFlipped = false;
+    let isFlipping = false;
+
     cell.addEventListener('click', () => {
-        cell.classList.toggle('flipped');
+        if (isFlipping) return;
+        isFlipping = true;
+
+        const inner = cell.querySelector('.card-inner');
+        const targetRotY = isFlipped ? 0 : 180;
+        const midRotY = 90;
+
+        const tl = gsap.timeline({
+            onComplete: () => {
+                isFlipped = !isFlipped;
+                isFlipping = false;
+            }
+        });
+
+        // Phase 1: first half of flip + lift
+        tl.to(inner, {
+            rotateY: midRotY,
+            z: 30,
+            scale: 1.04,
+            duration: 0.35,
+            ease: 'power2.in',
+        });
+
+        // Phase 2: second half of flip + settle
+        tl.to(inner, {
+            rotateY: targetRotY,
+            z: 0,
+            scale: 1,
+            duration: 0.45,
+            ease: 'power2.out',
+        });
+
+        // Phase 3: landing squash
+        tl.to(inner, {
+            z: -5,
+            scaleX: 1.02,
+            scaleY: 0.98,
+            duration: 0.1,
+            ease: 'power1.in',
+        });
+
+        // Phase 4: elastic bounce back
+        tl.to(inner, {
+            z: 0,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 0.3,
+            ease: 'elastic.out(1, 0.4)',
+        });
     });
 });
 
