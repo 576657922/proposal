@@ -792,6 +792,46 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// ===== Contact Liquid Glass — mouse tracking =====
+if (matchMedia('(pointer: fine)').matches) {
+    const contactPanel = document.querySelector('.contact-inner');
+    if (contactPanel) {
+        contactPanel.addEventListener('mousemove', (e) => {
+            const rect = contactPanel.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            contactPanel.style.setProperty('--mouse-x', `${x}%`);
+            contactPanel.style.setProperty('--mouse-y', `${y}%`);
+        });
+    }
+}
+
+// ===== Contact email — copy to clipboard =====
+const emailBtn = document.querySelector('.contact-btn[data-email]');
+const copyToast = document.getElementById('copyToast');
+
+if (emailBtn && copyToast) {
+    emailBtn.addEventListener('click', () => {
+        const email = emailBtn.getAttribute('data-email');
+        navigator.clipboard.writeText(email).then(() => {
+            copyToast.classList.add('show');
+            setTimeout(() => copyToast.classList.remove('show'), 1800);
+        }).catch(() => {
+            // Fallback for older browsers / insecure contexts
+            const ta = document.createElement('textarea');
+            ta.value = email;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            copyToast.classList.add('show');
+            setTimeout(() => copyToast.classList.remove('show'), 1800);
+        });
+    });
+}
+
 window.onload = function () {
     animate(performance.now());
 };
