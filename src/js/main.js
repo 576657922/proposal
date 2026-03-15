@@ -11,7 +11,7 @@ import { toggleLang, getCurrentLang } from './i18n.js';
 import { CursorRipple } from './cursor-ripple.js';
 import { initAnimatedGrain } from './grain.js';
 import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
-import { initStaggerReveals, initParallax, initParagraphReveals, initSectionDividers, initFooterReveal } from './scroll-effects.js';
+import { initStaggerReveals, initParallax, initParagraphReveals, initColorTransitions, initSectionDividers, initFooterReveal } from './scroll-effects.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -482,7 +482,7 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
 initParagraphReveals();
 initParallax();
-// Color transitions removed
+initColorTransitions(cursorRipple, sceneRefs);
 initSectionDividers();
 initFooterReveal();
 

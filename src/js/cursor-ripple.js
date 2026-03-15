@@ -31,8 +31,7 @@ export class CursorRipple {
       container = null;
     }
 
-    // Disabled — canvas overlay causes red tint on some GPUs
-    this.disabled = true;
+    this.disabled = false;
 
     this.color = opts.color || '232,255,71';
     this.trailLength = opts.trailLength || 50;
@@ -146,7 +145,7 @@ export class CursorRipple {
     if (this.points.length === 0) return;
 
     // Use lighter composite for additive glow
-    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalCompositeOperation = 'screen';
 
     // Draw each point as a radial gradient
     let alive = 0;
