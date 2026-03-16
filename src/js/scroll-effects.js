@@ -72,7 +72,7 @@ export function initStaggerReveals() {
  * Word-by-word blur reveal on paragraphs using SplitType + scrub ScrollTrigger.
  */
 export function initParagraphReveals() {
-    const targets = document.querySelectorAll('.about-col p, .timeline-desc, .contact-desc');
+    const targets = document.querySelectorAll('.trait-text p, .timeline-desc, .contact-desc');
     if (!targets.length) return;
 
     targets.forEach(el => {
@@ -114,9 +114,9 @@ export function initParallax() {
         });
     });
 
-    // About columns (desktop only)
+    // About traits (desktop only)
     if (window.innerWidth > 900) {
-        gsap.utils.toArray('.about-col').forEach((col, i) => {
+        gsap.utils.toArray('.about-trait').forEach((col, i) => {
             gsap.to(col, {
                 y: -20 * (i + 1),
                 scrollTrigger: {

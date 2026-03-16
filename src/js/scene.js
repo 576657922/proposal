@@ -1,5 +1,8 @@
-import { Scene, PerspectiveCamera, WebGLRenderer } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ZOOM_FAR } from './config.js';
 
 const container = document.getElementById('canvas-container');
@@ -34,3 +37,15 @@ controls.maxDistance = 50;
 // Disable touch controls so they don't block page scrolling on mobile
 controls.touches = {};
 renderer.domElement.style.touchAction = 'pan-y';
+
+// ===== Post-processing: Bloom =====
+const resolution = new Vector2(window.innerWidth, window.innerHeight);
+export const composer = new EffectComposer(renderer);
+
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+const bloomPass = new UnrealBloomPass(resolution, 0.4, 0.4, 0.85);
+composer.addPass(bloomPass);
+composer.setSize(window.innerWidth, window.innerHeight);
+composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

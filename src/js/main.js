@@ -1,7 +1,7 @@
 import { Quaternion, Vector3, TextureLoader, Clock } from 'three';
 import '../styles/main.css';
 import { CONFIG, ZOOM_FAR, ZOOM_CLOSE, japanQuaternion } from './config.js';
-import { scene, camera, renderer, controls } from './scene.js';
+import { scene, camera, renderer, controls, composer } from './scene.js';
 import { createGlobe } from './globe.js';
 import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
@@ -234,6 +234,7 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
     cursorRipple.resize();
 });
 
@@ -777,7 +778,7 @@ function animate(time) {
         camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 
-    renderer.render(scene, camera);
+    composer.render();
 
     // Draw cursor glow trail overlay (separate Canvas 2D layer)
     cursorRipple.update();

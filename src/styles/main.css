@@ -17,6 +17,7 @@
     --border: rgba(255,255,255,0.06);
     --border-medium: rgba(255,255,255,0.12);
     --font: 'Space Grotesk', sans-serif;
+    --font-display: 'Playfair Display', serif;
 
     /* Motion tokens */
     --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
@@ -514,7 +515,8 @@ body::after {
 }
 
 .hero-title em {
-    font-style: normal;
+    font-family: var(--font-display);
+    font-style: italic;
     font-weight: 700;
     color: var(--accent);
 }
@@ -753,26 +755,73 @@ body.is-loading {
 }
 
 .section h2 {
+    font-family: var(--font-display);
     font-size: clamp(2.8rem, 6vw, 5.5rem);
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.0;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     margin-bottom: 48px;
 }
 
-/* About */
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
+/* About — pull quote */
+.pull-quote {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    border-left: 3px solid var(--accent);
+    padding-left: 32px;
+    margin-bottom: 64px;
+    max-width: 720px;
 }
 
-.about-col p {
-    font-size: 1.05rem;
-    line-height: 1.7;
+/* About — trait grid */
+.about-traits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 48px;
+}
+
+.about-trait {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.trait-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-medium);
+    border-radius: 12px;
+    color: var(--accent);
+    background: var(--glass);
+}
+
+.trait-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.trait-text h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+    color: var(--fg);
+}
+
+.trait-text p {
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: var(--muted);
-    max-width: none;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 /* Stats counter */
@@ -1628,13 +1677,15 @@ body.is-loading {
         margin-bottom: 32px;
     }
 
-    .about-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    .pull-quote {
+        font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+        padding-left: 20px;
+        margin-bottom: 48px;
     }
 
-    .about-col p {
-        font-size: 0.95rem;
+    .about-traits {
+        grid-template-columns: 1fr;
+        gap: 28px;
     }
 
     .about-stats {
@@ -1880,9 +1931,33 @@ body.is-loading {
         margin-bottom: 24px;
     }
 
-    .about-col p {
-        font-size: 0.88rem;
-        line-height: 1.6;
+    .pull-quote {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        padding-left: 16px;
+        margin-bottom: 36px;
+    }
+
+    .about-traits {
+        gap: 24px;
+    }
+
+    .trait-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+    }
+
+    .trait-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .trait-text h3 {
+        font-size: 1rem;
+    }
+
+    .trait-text p {
+        font-size: 0.85rem;
     }
 
     .about-stats {

@@ -41,6 +41,7 @@ export function createGlobe(texture) {
         },
         vertexShader: `
             varying vec2 vUv;
+            varying float vFresnel;
             uniform float uTime;
             void main() {
                 vUv = uv;
@@ -48,6 +49,12 @@ export function createGlobe(texture) {
                 float size = ${CONFIG.particleSize.toFixed(1)} + sin(uTime * 2.0 + vUv.x * 10.0) * 0.5;
                 gl_PointSize = size * (20.0 / -mvPosition.z);
                 gl_Position = projectionMatrix * mvPosition;
+
+                // Fresnel: use normalized position as sphere normal
+                vec3 worldNormal = normalize(normalMatrix * normalize(position));
+                vec3 viewDir = normalize(-mvPosition.xyz);
+                float rim = 1.0 - max(0.0, dot(viewDir, worldNormal));
+                vFresnel = pow(rim, 2.5);
             }
         `,
         fragmentShader: `
@@ -56,6 +63,7 @@ export function createGlobe(texture) {
             uniform float uHasTexture;
             uniform float uBrightness;
             varying vec2 vUv;
+            varying float vFresnel;
             void main() {
                 float dist = length(gl_PointCoord - vec2(0.5));
                 if (dist > 0.5) discard;
@@ -64,7 +72,11 @@ export function createGlobe(texture) {
                     vec4 texColor = texture2D(uTexture, vUv);
                     if (texColor.r > 0.3) discard;
                 }
-                gl_FragColor = vec4(uColor, alpha * 0.9 * uBrightness);
+                // Fresnel edge glow: boost brightness and alpha at rim
+                float fresnelGlow = vFresnel * 0.6;
+                vec3 finalColor = uColor * (1.0 + fresnelGlow * 1.5);
+                float finalAlpha = alpha * uBrightness * (0.9 + fresnelGlow);
+                gl_FragColor = vec4(finalColor, finalAlpha);
             }
         `,
         transparent: true,
