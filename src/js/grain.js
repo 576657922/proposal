@@ -1,56 +1,56 @@
 /**
- * Film-grain overlay using SVG feTurbulence filter.
- * No canvas, no mix-blend-mode — avoids red tint GPU issue.
- * Animates seed value at ~12fps for organic noise movement.
+ * Film-grain overlay using a pre-generated noise canvas as a CSS background.
+ * Static texture with CSS animation for movement — near-zero GPU cost.
  */
 
 export function initAnimatedGrain() {
-    // Create SVG filter for noise generation (GPU-safe, no blend-mode needed)
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '0');
-    svg.setAttribute('height', '0');
-    svg.style.position = 'absolute';
-    svg.innerHTML = `
-        <filter id="grain-filter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" seed="0" result="noise"/>
-            <feColorMatrix type="saturate" values="0" in="noise" result="mono"/>
-        </filter>
-    `;
-    document.body.appendChild(svg);
+    // Generate a small noise texture once
+    const size = 128;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.createImageData(size, size);
+    const data = imageData.data;
 
-    // Create overlay div with the SVG filter
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed;
-        inset: -50%;
-        width: 200%;
-        height: 200%;
-        z-index: 10000;
-        opacity: 0.045;
-        pointer-events: none;
-        filter: url(#grain-filter);
-        background: transparent;
-    `;
-    document.body.appendChild(overlay);
+    for (let i = 0, len = data.length; i < len; i += 4) {
+        const v = (Math.random() * 255) | 0;
+        data[i]     = v;
+        data[i + 1] = v;
+        data[i + 2] = v;
+        data[i + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
 
-    // Animate seed for organic noise movement
-    const turbulence = svg.querySelector('feTurbulence');
-    let seed = 0;
-    let intervalId = setInterval(() => {
-        seed = (seed + 1) % 100;
-        turbulence.setAttribute('seed', seed);
-    }, 83); // ~12fps
+    const dataURL = canvas.toDataURL('image/png');
 
-    // Pause when tab is hidden to save CPU
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            clearInterval(intervalId);
-            intervalId = null;
-        } else if (!intervalId) {
-            intervalId = setInterval(() => {
-                seed = (seed + 1) % 100;
-                turbulence.setAttribute('seed', seed);
-            }, 83);
+    // Inject stylesheet with animation
+    const style = document.createElement('style');
+    style.textContent = `
+        .grain-overlay {
+            position: fixed;
+            inset: -100%;
+            width: 300%;
+            height: 300%;
+            z-index: 10000;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: url(${dataURL});
+            background-repeat: repeat;
+            animation: grain-shift 0.5s steps(4) infinite;
+            will-change: transform;
         }
-    });
+        @keyframes grain-shift {
+            0%   { transform: translate(0, 0); }
+            25%  { transform: translate(-64px, 32px); }
+            50%  { transform: translate(32px, -64px); }
+            75%  { transform: translate(-32px, -32px); }
+            100% { transform: translate(64px, 64px); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'grain-overlay';
+    document.body.appendChild(overlay);
 }
