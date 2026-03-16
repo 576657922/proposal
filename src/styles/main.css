@@ -250,10 +250,86 @@ body::after {
 }
 
 .preview-img span {
-    font-size: 4rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.08);
-    letter-spacing: -0.04em;
+    font-size: 2.4rem;
+    font-weight: 200;
+    color: rgba(255,255,255,0.12);
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+}
+
+/* Mock UI wireframes inside preview */
+.preview-mock {
+    position: absolute;
+    inset: 12px;
+    opacity: 0.15;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.preview-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.5);
+    width: 60%;
+}
+
+.preview-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.preview-grid span {
+    display: block;
+    font-size: 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+}
+
+.preview-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.preview-lines span {
+    display: block;
+    font-size: 0;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.25);
+}
+
+.preview-lines span:nth-child(2) { width: 80%; }
+.preview-lines span:nth-child(3) { width: 50%; }
+
+.preview-hero-block {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+}
+
+.preview-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.preview-table span {
+    display: block;
+    font-size: 0;
+    height: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+}
+
+.preview-table span:nth-child(even) {
+    background: rgba(255,255,255,0.1);
 }
 
 @media (pointer: coarse) {
@@ -430,8 +506,8 @@ body::after {
 
 /* Hero title with line reveal */
 .hero-title {
-    font-size: clamp(3.6rem, 7vw, 6.5rem);
-    font-weight: 300;
+    font-size: clamp(4.2rem, 9vw, 8rem);
+    font-weight: 200;
     line-height: 1.0;
     letter-spacing: -0.04em;
     margin-bottom: 28px;
@@ -677,9 +753,9 @@ body.is-loading {
 }
 
 .section h2 {
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    font-weight: 500;
-    line-height: 1.1;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.0;
     letter-spacing: -0.03em;
     margin-bottom: 48px;
 }
@@ -879,8 +955,9 @@ body.is-loading {
 }
 
 .project-name {
-    font-size: 1.25rem;
-    font-weight: 400;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
     transition: color var(--duration-normal) var(--ease-out);
 }
 
@@ -1513,7 +1590,7 @@ body.is-loading {
     }
 
     .hero-title {
-        font-size: clamp(2.2rem, 6vw, 2.8rem);
+        font-size: clamp(2.6rem, 7vw, 3.6rem);
     }
 
     .hero-sub {
@@ -1547,7 +1624,7 @@ body.is-loading {
     }
 
     .section h2 {
-        font-size: clamp(1.6rem, 5vw, 2rem);
+        font-size: clamp(2rem, 5.5vw, 3rem);
         margin-bottom: 32px;
     }
 
@@ -1611,7 +1688,7 @@ body.is-loading {
     }
 
     .project-name {
-        font-size: 1.1rem;
+        font-size: clamp(1.3rem, 2.5vw, 1.6rem);
     }
 
     .project-tags {
@@ -1748,7 +1825,7 @@ body.is-loading {
     }
 
     .hero-title {
-        font-size: clamp(1.8rem, 8vw, 2.4rem);
+        font-size: clamp(2.2rem, 9vw, 3rem);
         margin-bottom: 16px;
     }
 
@@ -1799,7 +1876,7 @@ body.is-loading {
     }
 
     .section h2 {
-        font-size: 1.5rem;
+        font-size: clamp(1.6rem, 6vw, 2.2rem);
         margin-bottom: 24px;
     }
 
@@ -1871,7 +1948,7 @@ body.is-loading {
     }
 
     .project-name {
-        font-size: 1rem;
+        font-size: clamp(1.1rem, 4vw, 1.4rem);
     }
 
     .tag {
