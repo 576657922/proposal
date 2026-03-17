@@ -188,9 +188,10 @@ export function initColorTransitions(cursorRipple, refs = {}) {
     const defaultColor = '#e8ff47';
 
     const colorMap = [
-        { trigger: '#about',  color: '#47ffe8' },  // teal
-        { trigger: '#work',   color: '#ff6b47' },  // warm
-        { trigger: '#contact', color: '#e8ff47' },  // back to default
+        { trigger: '#about',   color: '#47ffe8' },  // teal/green
+        { trigger: '#work',    color: '#ff6b47' },  // warm orange
+        { trigger: '#skills',  color: '#a78bfa' },  // purple
+        { trigger: '#contact', color: '#e8ff47' },  // back to default yellow-green
     ];
 
     colorMap.forEach(({ trigger: selector, color }, index) => {

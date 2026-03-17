@@ -10,6 +10,7 @@ import { textScramble } from './text-scramble.js';
 import { toggleLang, getCurrentLang } from './i18n.js';
 import { CursorRipple } from './cursor-ripple.js';
 import { initAnimatedGrain } from './grain.js';
+import { ParticleField, WaveMesh } from './particles.js';
 import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
 import { initStaggerReveals, initParallax, initParagraphReveals, initColorTransitions, initSectionDividers, initFooterReveal } from './scroll-effects.js';
 import Lenis from 'lenis';
@@ -54,6 +55,27 @@ const cursorRipple = new CursorRipple(null, {
 });
 
 initAnimatedGrain();
+
+// ===== Canvas 2D background effects (Skills particles + Contact wave mesh) =====
+const skillsCanvas = document.getElementById('skillsCanvas');
+const contactCanvas = document.getElementById('contactCanvas');
+const particleField = skillsCanvas ? new ParticleField(skillsCanvas) : null;
+const waveMesh = contactCanvas ? new WaveMesh(contactCanvas) : null;
+
+// Intersection Observer to activate/pause background effects
+const bgEffectObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.target.id === 'skills' && particleField) {
+            entry.isIntersecting ? particleField.start() : particleField.stop();
+        }
+        if (entry.target.id === 'contact' && waveMesh) {
+            entry.isIntersecting ? waveMesh.start() : waveMesh.stop();
+        }
+    });
+}, { threshold: 0.05 });
+
+if (skillsCanvas) bgEffectObserver.observe(document.getElementById('skills'));
+if (contactCanvas) bgEffectObserver.observe(document.getElementById('contact'));
 
 let globePoints = null;
 let markerGroup = null;
@@ -627,15 +649,16 @@ lenis.on('scroll', () => {
     const s = window.scrollY;
 
     // Hero text parallax (non-pointer devices only; pointer devices handled in animation loop)
+    const heroZoom = Math.min(1, scrollProgress);
     if (!isPointerDevice && heroMain) {
-        const y = scrollProgress * -120;
-        const opacity = Math.max(0, 1 - scrollProgress * 1.5);
-        const scale = 1 - scrollProgress * 0.1;
+        const y = heroZoom * -120;
+        const opacity = Math.max(0, 1 - heroZoom * 1.5);
+        const scale = 1 - heroZoom * 0.1;
         heroMain.style.transform = `translateY(${y}px) scale(${scale})`;
         heroMain.style.opacity = opacity;
     }
     if (heroAction) {
-        heroAction.style.opacity = Math.max(0, 1 - scrollProgress * 3);
+        heroAction.style.opacity = Math.max(0, 1 - heroZoom * 3);
     }
 
     // Parallax orbs
@@ -703,43 +726,64 @@ function animate(time) {
     // Three.js
     const elapsedTime = clock.getElapsedTime();
     const scrollProgress = getScrollProgress();
+    // Clamp zoom/rotation progress to 0–1; morph uses the 1–2 range
+    const zoomProgress = Math.min(1, scrollProgress);
+    // morphProgress: 0 when scrollProgress <= 1, ramps to 1 when scrollProgress reaches 2
+    const morphProgress = Math.max(0, Math.min(1, scrollProgress - 1));
 
     if (globePoints) {
         // Spin speed decreases with scroll
-        currentSpinAngle += CONFIG.rotationSpeed * (1 - scrollProgress);
+        currentSpinAngle += CONFIG.rotationSpeed * (1 - zoomProgress);
         globePoints.material.uniforms.uTime.value = elapsedTime;
 
-        // Quaternion interpolation: spin -> Japan close-up
+        // Quaternion interpolation: spin -> Japan close-up (clamp at 1)
         _spinQuat.setFromAxisAngle(_yAxis, currentSpinAngle);
-        _finalQuat.copy(_spinQuat).slerp(japanQuaternion, scrollProgress);
+        _finalQuat.copy(_spinQuat).slerp(japanQuaternion, zoomProgress);
         globePoints.quaternion.copy(_finalQuat);
 
         // Feature 7: Ambient mouse tilt on globe
-        if (isPointerDevice && scrollProgress < 0.5) {
-            const fadeout = Math.max(0, 1 - scrollProgress * 2);
+        if (isPointerDevice && zoomProgress < 0.5) {
+            const fadeout = Math.max(0, 1 - zoomProgress * 2);
             _mouseTiltQuat.setFromAxisAngle(_xAxis, normalizedMy * 0.04 * fadeout);
             _tempQuat.setFromAxisAngle(_yAxis, normalizedMx * 0.04 * fadeout);
             _mouseTiltQuat.multiply(_tempQuat);
             globePoints.quaternion.multiply(_mouseTiltQuat);
         }
+
+        // Drive morph uniforms: scatter particles and fade them out
+        globePoints.material.uniforms.uMorph.value += (morphProgress - globePoints.material.uniforms.uMorph.value) * 0.08;
+        // Opacity: stay full during morph scatter (0→0.7), then fade out (0.7→1.0)
+        const fadeStart = 0.7;
+        const morphOpacity = morphProgress < fadeStart ? 1.0 : 1.0 - ((morphProgress - fadeStart) / (1.0 - fadeStart));
+        globePoints.material.uniforms.uMorphOpacity.value += (morphOpacity - globePoints.material.uniforms.uMorphOpacity.value) * 0.08;
+
+        // Keep globe visible during morph (override preloader brightness fade)
+        globePoints.visible = morphOpacity > 0.01;
+
+        // Fade out atmosphere mesh during morph
+        if (sceneRefs.atmosMesh) {
+            const atmosFade = Math.max(0, 1 - morphProgress * 2.5);
+            sceneRefs.atmosMesh.material.uniforms.uIntensity.value += (atmosFade - sceneRefs.atmosMesh.material.uniforms.uIntensity.value) * 0.08;
+            sceneRefs.atmosMesh.visible = atmosFade > 0.01;
+        }
     }
 
     // Feature 7: Hero text parallax with mouse offset (pointer devices)
-    if (isPointerDevice && heroMain && scrollProgress < 1) {
-        const fadeout = Math.max(0, 1 - scrollProgress * 1.5);
+    if (isPointerDevice && heroMain && zoomProgress < 1) {
+        const fadeout = Math.max(0, 1 - zoomProgress * 1.5);
         const textShiftX = -normalizedMx * 15 * fadeout;
         const textShiftY = -normalizedMy * 10 * fadeout;
-        const y = scrollProgress * -120;
-        const s = 1 - scrollProgress * 0.1;
+        const y = zoomProgress * -120;
+        const s = 1 - zoomProgress * 0.1;
         heroMain.style.transform = `translateY(${y}px) scale(${s}) translate(${textShiftX}px, ${textShiftY}px)`;
-        heroMain.style.opacity = Math.max(0, 1 - scrollProgress * 1.5);
+        heroMain.style.opacity = Math.max(0, 1 - zoomProgress * 1.5);
     }
 
-    // Marker: avatar fades in, ring/line fade out with scroll
+    // Marker: avatar fades in, ring/line fade out with scroll — hide during morph
     if (markerGroup) {
         const markerRing = markerGroup.children[0];
         if (markerRing) {
-            const breathe = 1 - scrollProgress * 0.8;
+            const breathe = 1 - zoomProgress * 0.8;
             const scale = (1.0 + Math.sin(elapsedTime * 3) * 0.2) * breathe;
             markerRing.scale.set(scale, scale, 1);
         }
@@ -748,33 +792,35 @@ function animate(time) {
         const backfaceAlpha = Math.max(0, Math.min(1, (_worldPos.z + 1.0) / 3.0));
 
         // Ring & line fade out as we scroll; avatar fades in
-        const ringFade = Math.max(0, 1 - Math.max(0, scrollProgress - 0.3) * 2.5);
-        const avatarReveal = Math.min(1, scrollProgress * 1.5);
+        const ringFade = Math.max(0, 1 - Math.max(0, zoomProgress - 0.3) * 2.5);
+        const avatarReveal = Math.min(1, zoomProgress * 1.5);
+        // Fade out marker entirely during morph
+        const markerMorphFade = Math.max(0, 1 - morphProgress * 3);
 
         markerGroup.children.forEach(child => {
             if (child.material) {
                 if (child.isSprite) {
-                    // Avatar: starts dim, becomes fully visible on scroll
-                    child.material.opacity = backfaceAlpha * (0.15 + 0.85 * avatarReveal);
+                    // Avatar: starts dim, becomes fully visible on scroll, fades in morph
+                    child.material.opacity = backfaceAlpha * (0.15 + 0.85 * avatarReveal) * markerMorphFade;
                 } else {
                     // Ring & line: fade out on scroll
                     const baseOpacity = (child.isLine || child.geometry?.type === 'RingGeometry') ? 0.6 : 1.0;
-                    child.material.opacity = backfaceAlpha * baseOpacity * ringFade;
+                    child.material.opacity = backfaceAlpha * baseOpacity * ringFade * markerMorphFade;
                 }
             }
         });
     }
 
     // Disable OrbitControls when scroll zoom is active
-    controls.enabled = scrollProgress <= 0.01;
+    controls.enabled = zoomProgress <= 0.01;
 
     if (controls.enabled) {
         controls.update();
     }
 
-    // Camera zoom driven by scroll
+    // Camera zoom driven by scroll (clamp at zoom-close)
     if (globePoints) {
-        const targetZ = ZOOM_FAR + (ZOOM_CLOSE - ZOOM_FAR) * scrollProgress;
+        const targetZ = ZOOM_FAR + (ZOOM_CLOSE - ZOOM_FAR) * zoomProgress;
         camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 

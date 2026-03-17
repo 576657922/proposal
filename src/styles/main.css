@@ -733,6 +733,17 @@ body.is-loading {
 #skills {
     padding-top: 100px;
     padding-bottom: 100px;
+    overflow: hidden;
+}
+
+.section-bg-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .section-dark {
@@ -742,6 +753,8 @@ body.is-loading {
 .section-inner {
     max-width: 1100px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .section-label {
@@ -750,8 +763,9 @@ body.is-loading {
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--accent);
     margin-bottom: 32px;
+    transition: color 0.4s ease;
 }
 
 .section h2 {
@@ -776,6 +790,7 @@ body.is-loading {
     padding-left: 32px;
     margin-bottom: 64px;
     max-width: 720px;
+    transition: border-color 0.4s ease;
 }
 
 /* About — trait grid */
@@ -1297,6 +1312,7 @@ body.is-loading {
     padding-bottom: 160px;
     background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 60%);
     position: relative;
+    overflow: hidden;
 }
 
 #contact::before {
@@ -1311,7 +1327,7 @@ body.is-loading {
 
 .contact-inner {
     text-align: center;
-    max-width: 700px;
+    max-width: 900px;
     position: relative;
     padding: 64px 48px;
     background: rgba(255, 255, 255, 0.04);
@@ -1510,9 +1526,10 @@ body.is-loading {
     max-width: 1100px;
     margin: 0 auto;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 30%, transparent), transparent);
     transform: scaleX(0);
     transform-origin: center;
+    transition: background 0.4s ease;
 }
 
 /* ===== Footer ===== */
