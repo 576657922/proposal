@@ -80,10 +80,9 @@ export function initParagraphReveals() {
 
         if (split.words && split.words.length > 0) {
             gsap.fromTo(split.words,
-                { opacity: 0.1, filter: 'blur(4px)' },
+                { opacity: 0.1 },
                 {
                     opacity: 1,
-                    filter: 'blur(0px)',
                     stagger: 0.02,
                     scrollTrigger: {
                         trigger: el,
@@ -146,6 +145,37 @@ export function initParallax() {
 /**
  * Animate section dividers into view on scroll.
  */
+/**
+ * Wall tunnel — drives an SVG wall image's rotate/scale/translate based on
+ * the wall section's scroll progress. Inspired by leonardo.ai's hero.
+ */
+export function initWallTunnel() {
+    const section = document.getElementById('wallSection');
+    const layer = document.getElementById('wallLayer');
+    if (!section || !layer) return;
+    let raf = 0;
+    const update = () => {
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight || 1;
+        // progress: 0 when section top hits viewport top, 1 when section bottom leaves
+        const total = section.offsetHeight - vh;
+        const scrolled = Math.min(total, Math.max(0, -rect.top));
+        const p = total > 0 ? scrolled / total : 0;
+        const rotate = p * 45;
+        const scale = 1 + p * 1.5;
+        const ty = p * 500;
+        layer.style.transform = `translateY(${ty}px) rotate(${rotate}deg) scale(${scale})`;
+    };
+    update();
+    ScrollTrigger.create({
+        trigger: section,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: update,
+    });
+    window.addEventListener('resize', update);
+}
+
 export function initSectionDividers() {
     gsap.utils.toArray('.section-divider').forEach(div => {
         gsap.to(div, {

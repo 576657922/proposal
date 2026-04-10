@@ -130,20 +130,28 @@ export function initMagneticButtons() {
     const items = [];
     magneticTargets.forEach(({ selector, threshold, strength }) => {
         document.querySelectorAll(selector).forEach(el => {
-            items.push({ el, threshold, strength, active: false });
+            items.push({ el, threshold, strength, active: false, rect: el.getBoundingClientRect() });
         });
     });
 
+    // Refresh cached rects on scroll/resize
+    const refreshRects = () => {
+        items.forEach(item => { item.rect = item.el.getBoundingClientRect(); });
+    };
+    window.addEventListener('scroll', refreshRects, { passive: true });
+    window.addEventListener('resize', refreshRects);
+
     document.addEventListener('mousemove', (e) => {
         items.forEach(item => {
-            const rect = item.el.getBoundingClientRect();
+            const rect = item.rect;
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
             const dx = e.clientX - cx;
             const dy = e.clientY - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const distSq = dx * dx + dy * dy;
+            const threshSq = item.threshold * item.threshold;
 
-            if (dist < item.threshold) {
+            if (distSq < threshSq) {
                 item.active = true;
                 gsap.to(item.el, {
                     x: dx * item.strength,

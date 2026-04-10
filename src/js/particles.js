@@ -107,15 +107,17 @@ export class ParticleField {
         const { ctx, particles, w, h, accentRGB, CONNECTION_DIST } = this;
         ctx.clearRect(0, 0, w, h);
 
-        // Draw connections
+        // Draw connections (squared distance to avoid sqrt)
         ctx.lineWidth = 0.5;
+        const connDistSq = CONNECTION_DIST * CONNECTION_DIST;
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
                 const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < CONNECTION_DIST) {
-                    const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+                const distSq = dx * dx + dy * dy;
+                if (distSq < connDistSq) {
+                    const ratio = distSq / connDistSq;
+                    const alpha = (1 - Math.sqrt(ratio)) * 0.15;
                     ctx.strokeStyle = `rgba(${accentRGB},${alpha})`;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);

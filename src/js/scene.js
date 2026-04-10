@@ -39,7 +39,7 @@ controls.touches = {};
 renderer.domElement.style.touchAction = 'pan-y';
 
 // ===== Post-processing: Bloom =====
-const resolution = new Vector2(window.innerWidth, window.innerHeight);
+const resolution = new Vector2(window.innerWidth / 2, window.innerHeight / 2);
 export const composer = new EffectComposer(renderer);
 
 const renderPass = new RenderPass(scene, camera);

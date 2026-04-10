@@ -9,7 +9,7 @@
     <meta property="og:description" content="5 years experience. Web apps, MVPs, and landing pages. Next.js, TypeScript, Supabase, PostgreSQL, Java, Spring Boot.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500&family=Playfair+Display:wght@400;700&family=Space+Grotesk:wght@300;400;500;600&display=swap">
 </head>
 <body>
     <!-- Preloader -->
@@ -110,6 +110,24 @@
         </div>
     </div>
 
+    <!-- Wall tunnel section (leonardo.ai-inspired) -->
+    <section class="wall-section" id="wallSection" aria-label="intro">
+        <div class="wall-sticky">
+            <div class="wall-layer" id="wallLayer">
+                <img src="/leonardo/wall.svg" alt="" aria-hidden="true" />
+            </div>
+            <div class="wall-card">
+                <h2 class="wall-headline">
+                    Code that ships<br/>and keeps shipping
+                </h2>
+                <div class="wall-ctas">
+                    <a href="#contact" class="wall-cta wall-cta-primary">Start a project</a>
+                    <a href="#work" class="wall-cta wall-cta-ghost">See the work</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- About -->
     <section id="about" class="section">
         <div class="section-inner">
@@ -176,6 +194,14 @@
                 <div class="stat">
                     <span class="stat-number" data-count="40" data-suffix="+">0+</span>
                     <span class="stat-label" data-i18n="about.stat2">Projects Delivered</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-count="2" data-suffix="">0</span>
+                    <span class="stat-label">Languages Shipped</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Async Ready</span>
                 </div>
             </div>
         </div>
@@ -468,17 +494,19 @@
 
     <!-- Contact -->
     <section id="contact" class="section section-dark">
-        <canvas class="section-bg-canvas" id="contactCanvas"></canvas>
         <div class="section-inner contact-inner">
-            <div class="glass-ambient-glow"></div>
-            <span class="section-label reveal" data-scramble="( 04 — Contact )" data-i18n-scramble="contact.label"> </span>
-            <h2 class="reveal" data-scramble="Have something in mind?" data-i18n-scramble="contact.heading"> </h2>
-            <p class="contact-desc reveal" data-i18n="contact.desc">30–40 hours a week, weekdays or weekends. Want to test the waters? I'm happy to start with one small task first.</p>
-            <button class="contact-btn reveal" data-email="chenfangfang6b6@gmail.com">chenfangfang6b6@gmail.com →</button>
-            <span class="copy-toast" id="copyToast">Copied!</span>
-            <div class="social-links reveal">
-                <a href="https://x.com/chenfan10235083" target="_blank" rel="noopener">Twitter</a>
-                <a href="https://github.com/576657922" target="_blank" rel="noopener">GitHub</a>
+            <p class="contact-subtitle reveal" data-i18n="contact.subtitle">Is Your Big Idea Ready to Go Wild?</p>
+            <h2 class="contact-headline reveal">
+                <span class="hover-letters-line" data-text-en="Let's work" data-text-ja="一緒に" data-i18n-hover="contact.line1"></span>
+                <span class="hover-letters-line" data-text-en="together!" data-text-ja="働きましょう！" data-i18n-hover="contact.line2"></span>
+            </h2>
+            <div class="contact-bottom reveal">
+                <button class="contact-btn" data-email="chenfangfang6b6@gmail.com">chenfangfang6b6@gmail.com →</button>
+                <span class="copy-toast" id="copyToast">Copied!</span>
+                <div class="social-links">
+                    <a href="https://x.com/chenfan10235083" target="_blank" rel="noopener">Twitter</a>
+                    <a href="https://github.com/576657922" target="_blank" rel="noopener">GitHub</a>
+                </div>
             </div>
         </div>
     </section>

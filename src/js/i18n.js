@@ -49,7 +49,10 @@ const translations = {
         'skills.desc3': 'Java, Spring Boot. Systems built so the next person can pick them up easily.',
         'skills.desc4': 'I pick up existing codebases, improve what needs attention, and adjust things when requirements change.',
         'contact.label': '( 04 \u2014 Contact )',
+        'contact.subtitle': 'Is Your Big Idea Ready to Go Wild?',
         'contact.heading': 'Have something in mind?',
+        'contact.line1': "Let's work",
+        'contact.line2': 'together!',
         'contact.desc': '30\u201340 hours a week, weekdays or weekends. Want to test the waters? I\u2019m happy to start with one small task first.',
     },
     ja: {
@@ -100,7 +103,10 @@ const translations = {
         'skills.desc3': 'Java、Spring Boot。次の人が引き継ぎやすい設計を意識しています。',
         'skills.desc4': '既存コードベースを引き継いで、改善点を見つけて対応。要件変更にも柔軟に合わせます。',
         'contact.label': '( 04 — お問合せ )',
+        'contact.subtitle': 'あなたのアイデア、一緒に形にしませんか？',
         'contact.heading': '何かお考えでしたら、お気軽に。',
+        'contact.line1': '一緒に',
+        'contact.line2': '働きましょう！',
         'contact.desc': '週30〜40時間。平日も休日も対応可。まずは小さなタスクから試してもらえれば。',
     }
 };

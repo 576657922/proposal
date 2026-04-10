@@ -29,23 +29,22 @@ export function initAnimatedGrain() {
     style.textContent = `
         .grain-overlay {
             position: fixed;
-            inset: -100%;
-            width: 300%;
-            height: 300%;
+            inset: -25%;
+            width: 150%;
+            height: 150%;
             z-index: 10000;
             opacity: 0.05;
             pointer-events: none;
             background-image: url(${dataURL});
             background-repeat: repeat;
             animation: grain-shift 0.5s steps(4) infinite;
-            will-change: transform;
         }
         @keyframes grain-shift {
             0%   { transform: translate(0, 0); }
-            25%  { transform: translate(-64px, 32px); }
-            50%  { transform: translate(32px, -64px); }
-            75%  { transform: translate(-32px, -32px); }
-            100% { transform: translate(64px, 64px); }
+            25%  { transform: translate(-32px, 16px); }
+            50%  { transform: translate(16px, -32px); }
+            75%  { transform: translate(-16px, -16px); }
+            100% { transform: translate(32px, 32px); }
         }
     `;
     document.head.appendChild(style);

@@ -8,11 +8,11 @@ import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
 import { toggleLang, getCurrentLang } from './i18n.js';
-import { CursorRipple } from './cursor-ripple.js';
+// import { CursorRipple } from './cursor-ripple.js';
 import { initAnimatedGrain } from './grain.js';
-import { ParticleField, WaveMesh } from './particles.js';
+import { ParticleField } from './particles.js';
 import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
-import { initStaggerReveals, initParallax, initParagraphReveals, initColorTransitions, initSectionDividers, initFooterReveal } from './scroll-effects.js';
+import { initStaggerReveals, initParallax, initParagraphReveals, initColorTransitions, initSectionDividers, initFooterReveal, initWallTunnel } from './scroll-effects.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -44,23 +44,54 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 // Initialize scroll-driven zoom
 initScrollControls();
 
-// ===== Cursor glow trail (Lusion-style) =====
-const cursorRipple = new CursorRipple(null, {
-    color: '232,255,71',   // accent #e8ff47
-    trailLength: 50,       // max trail points
-    pointLife: 800,         // ms per point
-    baseRadius: 60,         // glow radius px
-    intensity: 0.4,         // peak alpha
-    velocityScale: 2.5,     // radius boost from speed
-});
+// ===== Cursor glow trail (disabled — too AI-template-like) =====
+// const cursorRipple = new CursorRipple(null, {
+//     color: '232,255,71',
+//     trailLength: 50,
+//     pointLife: 800,
+//     baseRadius: 60,
+//     intensity: 0.4,
+//     velocityScale: 2.5,
+// });
 
 initAnimatedGrain();
 
+// ===== Hover Letters (Contact lusion effect) =====
+function initHoverLetters() {
+    const lang = getCurrentLang();
+    document.querySelectorAll('.hover-letters-line').forEach(el => {
+        const text = lang === 'ja'
+            ? (el.dataset.textJa || el.dataset.textEn)
+            : el.dataset.textEn;
+        el.innerHTML = '';
+        text.split('').forEach(c => {
+            const span = document.createElement('span');
+            span.className = 'hover-letter';
+            span.textContent = c === ' ' ? '\u00A0' : c;
+            el.appendChild(span);
+        });
+    });
+}
+initHoverLetters();
+
+// JS-driven hover for contact headline letters
+{
+    let hovered = null;
+    document.addEventListener('mousemove', (e) => {
+        // elementFromPoint ignores pointer-events:none layers automatically
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const hit = el && el.classList.contains('hover-letter') ? el : null;
+        if (hit !== hovered) {
+            if (hovered) hovered.style.color = '';
+            hovered = hit;
+            if (hovered) hovered.style.color = 'rgba(255,255,255,0.35)';
+        }
+    });
+}
+
 // ===== Canvas 2D background effects (Skills particles + Contact wave mesh) =====
 const skillsCanvas = document.getElementById('skillsCanvas');
-const contactCanvas = document.getElementById('contactCanvas');
 const particleField = skillsCanvas ? new ParticleField(skillsCanvas) : null;
-const waveMesh = contactCanvas ? new WaveMesh(contactCanvas) : null;
 
 // Intersection Observer to activate/pause background effects
 const bgEffectObserver = new IntersectionObserver((entries) => {
@@ -68,14 +99,10 @@ const bgEffectObserver = new IntersectionObserver((entries) => {
         if (entry.target.id === 'skills' && particleField) {
             entry.isIntersecting ? particleField.start() : particleField.stop();
         }
-        if (entry.target.id === 'contact' && waveMesh) {
-            entry.isIntersecting ? waveMesh.start() : waveMesh.stop();
-        }
     });
 }, { threshold: 0.05 });
 
 if (skillsCanvas) bgEffectObserver.observe(document.getElementById('skills'));
-if (contactCanvas) bgEffectObserver.observe(document.getElementById('contact'));
 
 let globePoints = null;
 let markerGroup = null;
@@ -257,7 +284,7 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
-    cursorRipple.resize();
+    // cursorRipple.resize();
 });
 
 // ===== Language toggle =====
@@ -265,6 +292,9 @@ const langToggle = document.getElementById('langToggle');
 langToggle.addEventListener('click', () => {
     const newLang = toggleLang();
     langToggle.textContent = newLang === 'ja' ? 'English' : '日本語';
+
+    // Re-render hover letters for new language
+    initHoverLetters();
 
     // Re-run SplitType on hero title after innerHTML change
     const heroTitleEl = document.querySelector('.hero-title');
@@ -505,9 +535,10 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
 initParagraphReveals();
 initParallax();
-initColorTransitions(cursorRipple, sceneRefs);
+initColorTransitions(null, sceneRefs);
 initSectionDividers();
 initFooterReveal();
+initWallTunnel();
 
 // ===== 3. (Glow effects removed — cards use 3D flip now) =====
 
@@ -515,23 +546,20 @@ initFooterReveal();
 let skewTarget = 0;
 let currentSkew = 0;
 
+// ===== 5. Marquee scroll-responsive speed =====
+const marqueeTrack = document.querySelector('.marquee-track');
+const marqueeAnimations = marqueeTrack ? marqueeTrack.getAnimations() : [];
+let marqueeRate = 1;
+
+// Consolidated velocity-driven scroll handler
 lenis.on('scroll', ({ velocity }) => {
     skewTarget = Math.max(-6, Math.min(6, velocity * 0.25));
-});
-
-// ===== 5. Marquee scroll-responsive speed =====
-// Use Web Animations API playbackRate to avoid animation reset on duration change
-const marqueeTrack = document.querySelector('.marquee-track');
-if (marqueeTrack) {
-    const marqueeAnimations = marqueeTrack.getAnimations();
-    let marqueeRate = 1;
-
-    lenis.on('scroll', ({ velocity }) => {
+    if (marqueeAnimations.length) {
         const target = 1 + Math.abs(velocity) * 0.15;
         marqueeRate += (target - marqueeRate) * 0.1;
         marqueeAnimations.forEach(a => { a.playbackRate = marqueeRate; });
-    });
-}
+    }
+});
 
 // ===== Scroll-triggered reveal (IntersectionObserver with stagger) =====
 const observer = new IntersectionObserver(entries => {
@@ -824,10 +852,15 @@ function animate(time) {
         camera.position.z += (targetZ - camera.position.z) * 0.12;
     }
 
-    composer.render();
+    // Skip Three.js render entirely when globe is off-screen
+    if (globePoints && globePoints.visible) {
+        composer.render();
+    } else if (sceneRefs.atmosMesh && sceneRefs.atmosMesh.visible) {
+        composer.render();
+    }
 
-    // Draw cursor glow trail overlay (separate Canvas 2D layer)
-    cursorRipple.update();
+    // Cursor glow trail disabled
+    // cursorRipple.update();
 }
 
 // Pause animation when tab is hidden
