@@ -46,23 +46,34 @@
         <span class="cursor-label" id="cursorLabel"></span>
     </div>
 
-    <!-- Project hover preview -->
-    <div class="project-preview" id="projectPreview">
-        <div class="preview-img" data-index="0" style="background: linear-gradient(135deg, #0d1f17, #1a3a2a 40%, #47ffe8 150%);">
-            <div class="preview-mock"><div class="preview-bar"></div><div class="preview-grid"><span></span><span></span><span></span><span></span></div></div>
-            <span>Dashboard</span>
+    <!-- Project hover preview (EN) -->
+    <div class="project-preview" id="projectPreview" data-lang="en">
+        <div class="preview-img" data-index="0" style="background: url('/images/framer-micro.jpg') center/cover;">
+            <span>Framer</span>
         </div>
-        <div class="preview-img" data-index="1" style="background: linear-gradient(135deg, #1a0a2a, #2a1a3a 40%, #a78bfa 150%);">
-            <div class="preview-mock"><div class="preview-bar"></div><div class="preview-lines"><span></span><span></span><span></span></div></div>
-            <span>Fintech</span>
+        <div class="preview-img" data-index="1" style="background: url('/images/botanist.jpg') center/cover;">
+            <span>BOTANIST</span>
         </div>
-        <div class="preview-img" data-index="2" style="background: linear-gradient(135deg, #0a1a2a, #1a2a3a 40%, #60a5fa 150%);">
-            <div class="preview-mock"><div class="preview-bar"></div><div class="preview-hero-block"></div></div>
-            <span>Landing</span>
+        <div class="preview-img" data-index="2" style="background: url('/images/brother-sdgs.jpg') center/cover;">
+            <span>Brother</span>
         </div>
-        <div class="preview-img" data-index="3" style="background: linear-gradient(135deg, #2a1a0a, #3a2a1a 40%, #ff6b47 150%);">
-            <div class="preview-mock"><div class="preview-bar"></div><div class="preview-table"><span></span><span></span><span></span></div></div>
-            <span>Enterprise</span>
+        <div class="preview-img" data-index="3" style="background: url('/images/haconese.jpg') center/cover;">
+            <span>Haconese</span>
+        </div>
+    </div>
+    <!-- Project hover preview (JA) -->
+    <div class="project-preview" id="projectPreviewJa" data-lang="ja" style="display:none;">
+        <div class="preview-img" data-index="0" style="background: url('/images/botanist.jpg') center/cover;">
+            <span>BOTANIST</span>
+        </div>
+        <div class="preview-img" data-index="1" style="background: url('/images/kaitai-center.jpg') center/cover;">
+            <span>解体工事</span>
+        </div>
+        <div class="preview-img" data-index="2" style="background: url('/images/sun-biz.jpg') center/cover;">
+            <span>Sun*</span>
+        </div>
+        <div class="preview-img" data-index="3" style="background: url('/images/tsj-corporate.jpg') center/cover;">
+            <span>TSJ</span>
         </div>
     </div>
 
@@ -248,13 +259,25 @@
         <div class="section-inner">
             <span class="section-label reveal" data-scramble="( 02 — Work )" data-i18n-scramble="work.label"> </span>
             <h2 class="reveal" data-scramble="Selected projects" data-i18n-scramble="work.heading"> </h2>
-            <div class="project-list">
+            <!-- EN projects -->
+            <div class="project-list" data-lang="en">
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="SaaS Admin Dashboard" data-i18n-scramble="work.project1"> </span>
+                        <span class="project-name" data-scramble="Framer Creator Micro 2"> </span>
                         <div class="project-tags">
                             <span class="tag">Next.js</span>
-                            <span class="tag">Supabase</span>
+                            <span class="tag">Product Page</span>
+                            <span class="tag">2026</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name" data-scramble="BOTANIST Landing Page"> </span>
+                        <div class="project-tags">
+                            <span class="tag">Next.js</span>
+                            <span class="tag">Design</span>
                             <span class="tag">2025</span>
                         </div>
                     </div>
@@ -262,21 +285,10 @@
                 </a>
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Fintech MVP" data-i18n-scramble="work.project2"> </span>
-                        <div class="project-tags">
-                            <span class="tag">TypeScript</span>
-                            <span class="tag">Full-stack</span>
-                            <span class="tag">2024</span>
-                        </div>
-                    </div>
-                    <span class="project-arrow">↗</span>
-                </a>
-                <a href="#" class="project-item reveal">
-                    <div class="project-info">
-                        <span class="project-name" data-scramble="E-commerce Landing Page" data-i18n-scramble="work.project3"> </span>
+                        <span class="project-name" data-scramble="Brother SDGs Story"> </span>
                         <div class="project-tags">
                             <span class="tag">Next.js</span>
-                            <span class="tag">Performance</span>
+                            <span class="tag">Corporate</span>
                             <span class="tag">2024</span>
                         </div>
                     </div>
@@ -284,11 +296,58 @@
                 </a>
                 <a href="#" class="project-item reveal">
                     <div class="project-info">
-                        <span class="project-name" data-scramble="Enterprise Workflow System" data-i18n-scramble="work.project4"> </span>
+                        <span class="project-name" data-scramble="Haconese Product Site"> </span>
+                        <div class="project-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">Animation</span>
+                            <span class="tag">2023</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+            </div>
+            <!-- JA projects -->
+            <div class="project-list" data-lang="ja" style="display:none;">
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name" data-scramble="BOTANIST LP"> </span>
+                        <div class="project-tags">
+                            <span class="tag">Next.js</span>
+                            <span class="tag">デザイン実装</span>
+                            <span class="tag">2025</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name" data-scramble="解体工事窓口センター"> </span>
+                        <div class="project-tags">
+                            <span class="tag">Next.js</span>
+                            <span class="tag">WordPress</span>
+                            <span class="tag">2024</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name" data-scramble="Sun* 新規事業開発支援"> </span>
                         <div class="project-tags">
                             <span class="tag">Java</span>
                             <span class="tag">Spring Boot</span>
                             <span class="tag">2023</span>
+                        </div>
+                    </div>
+                    <span class="project-arrow">↗</span>
+                </a>
+                <a href="#" class="project-item reveal">
+                    <div class="project-info">
+                        <span class="project-name" data-scramble="TSJ コーポレートサイト"> </span>
+                        <div class="project-tags">
+                            <span class="tag">HTML/CSS</span>
+                            <span class="tag">WordPress</span>
+                            <span class="tag">2022</span>
                         </div>
                     </div>
                     <span class="project-arrow">↗</span>

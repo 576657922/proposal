@@ -74,11 +74,10 @@ function initHoverLetters() {
 }
 initHoverLetters();
 
-// JS-driven hover for contact headline letters
-{
+// JS-driven hover for contact headline letters (pointer devices only)
+if (matchMedia('(pointer: fine)').matches) {
     let hovered = null;
     document.addEventListener('mousemove', (e) => {
-        // elementFromPoint ignores pointer-events:none layers automatically
         const el = document.elementFromPoint(e.clientX, e.clientY);
         const hit = el && el.classList.contains('hover-letter') ? el : null;
         if (hit !== hovered) {
@@ -296,6 +295,9 @@ langToggle.addEventListener('click', () => {
     // Re-render hover letters for new language
     initHoverLetters();
 
+    // Switch project lists and previews
+    switchProjectLang(newLang);
+
     // Re-run SplitType on hero title after innerHTML change
     const heroTitleEl = document.querySelector('.hero-title');
     if (heroTitleEl) {
@@ -365,33 +367,52 @@ if (isPointerDevice) {
 }
 
 // ===== Project hover image preview =====
-const projectPreview = document.getElementById('projectPreview');
-const previewImgs = document.querySelectorAll('.preview-img');
-const projectItems = document.querySelectorAll('.project-item');
-
 let previewX = 0, previewY = 0, previewTargetX = 0, previewTargetY = 0;
 let previewActive = false;
 
-projectItems.forEach((item, index) => {
-    item.addEventListener('mouseenter', () => {
-        setCursorState('view');
-        previewActive = true;
-        projectPreview.classList.add('active');
-        previewImgs.forEach(img => img.classList.remove('active'));
-        if (previewImgs[index]) previewImgs[index].classList.add('active');
-    });
+function bindProjectHovers() {
+    const lang = getCurrentLang();
+    const preview = document.querySelector(`.project-preview[data-lang="${lang}"]`);
+    const imgs = preview ? preview.querySelectorAll('.preview-img') : [];
+    const items = document.querySelectorAll(`.project-list[data-lang="${lang}"] .project-item`);
 
-    item.addEventListener('mouseleave', () => {
-        setCursorState('default');
-        previewActive = false;
-        projectPreview.classList.remove('active');
-    });
+    items.forEach((item, index) => {
+        item.addEventListener('mouseenter', () => {
+            setCursorState('view');
+            previewActive = true;
+            preview.classList.add('active');
+            imgs.forEach(img => img.classList.remove('active'));
+            if (imgs[index]) imgs[index].classList.add('active');
+        });
 
-    item.addEventListener('mousemove', (e) => {
-        previewTargetX = e.clientX + 24;
-        previewTargetY = e.clientY - 220;
+        item.addEventListener('mouseleave', () => {
+            setCursorState('default');
+            previewActive = false;
+            preview.classList.remove('active');
+        });
+
+        item.addEventListener('mousemove', (e) => {
+            previewTargetX = e.clientX + 24;
+            previewTargetY = e.clientY - 220;
+        });
     });
-});
+}
+bindProjectHovers();
+
+// Language-aware project/preview switcher
+function switchProjectLang(lang) {
+    document.querySelectorAll('.project-list[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? '' : 'none';
+    });
+    document.querySelectorAll('.project-preview[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? '' : 'none';
+    });
+    // Make new project items visible (they missed the IntersectionObserver)
+    document.querySelectorAll(`.project-list[data-lang="${lang}"] .project-item`).forEach(el => {
+        el.classList.add('visible');
+    });
+    bindProjectHovers();
+}
 
 // ===== Magnetic buttons =====
 initMagneticButtons();
@@ -738,7 +759,8 @@ function animate(time) {
         if (previewActive) {
             previewX += (previewTargetX - previewX) * 0.1;
             previewY += (previewTargetY - previewY) * 0.1;
-            projectPreview.style.transform = `translate(${previewX}px, ${previewY}px)`;
+            const activePreview = document.querySelector(`.project-preview[data-lang="${getCurrentLang()}"]`);
+            if (activePreview) activePreview.style.transform = `translate(${previewX}px, ${previewY}px)`;
         }
     }
 
@@ -746,7 +768,7 @@ function animate(time) {
     currentSkew += (skewTarget - currentSkew) * 0.1;
     skewTarget *= 0.95; // decay
     if (Math.abs(currentSkew) > 0.01) {
-        projectItems.forEach(item => {
+        document.querySelectorAll(`.project-list[data-lang="${getCurrentLang()}"] .project-item`).forEach(item => {
             item.style.transform = `skewY(${currentSkew}deg)`;
         });
     }
