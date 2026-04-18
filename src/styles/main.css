@@ -497,7 +497,7 @@ body::after {
 /* ===== Wall tunnel section (leonardo.ai-inspired) ===== */
 .wall-section {
     position: relative;
-    height: 200vh;
+    height: 300vh;
     background: #000;
 }
 
@@ -528,6 +528,35 @@ body::after {
     pointer-events: none;
     user-select: none;
     color: var(--accent);
+}
+
+/* Phase-B scatter layer — one-by-one artwork fling after the tunnel fades */
+.wall-scatter {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    will-change: opacity;
+    pointer-events: none;
+}
+
+.wall-scatter .scatter-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9);
+    will-change: transform, opacity;
+    transform-origin: 50% 50%;
+}
+
+.wall-scatter .scatter-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+    display: block;
 }
 
 .wall-card {
@@ -2120,13 +2149,6 @@ h2.contact-headline .hover-letter:hover {
         font-size: 10px;
         padding: 3px 8px;
     }
-
-    .contact-btn {
-        padding: 14px 32px;
-        font-size: 0.9rem;
-    }
-
-
 
     .social-links {
         gap: 16px;
