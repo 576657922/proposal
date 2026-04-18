@@ -620,6 +620,11 @@ body::after {
 @media (max-width: 768px) {
     .wall-card::before { width: 70vmin; height: 38vmin; }
     .wall-ctas { flex-direction: column; align-items: center; }
+    /* Mobile: SVG is wide (1880x1094); cover crops it to nearly nothing in
+       portrait viewports. Switch to contain + center so the whole tunnel is
+       visible. Shrink scatter cards so they stay on-screen when vmin is small. */
+    .wall-layer img { object-fit: contain; object-position: center; }
+    .wall-scatter .scatter-card { transform-origin: 50% 50%; }
 }
 
 /* Hero label */
