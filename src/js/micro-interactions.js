@@ -126,11 +126,21 @@ export function initMagneticButtons() {
         { selector: '.nav-links a', threshold: 80, strength: 0.25 },
     ];
 
-    // Build a flat list of { el, threshold, strength }
+    // Build a flat list of { el, threshold, strength }.
+    // quickTo setters reuse a single tween per element instead of spawning a new
+    // gsap.to() on every mousemove, which avoids heavy per-frame tween churn.
     const items = [];
     magneticTargets.forEach(({ selector, threshold, strength }) => {
         document.querySelectorAll(selector).forEach(el => {
-            items.push({ el, threshold, strength, active: false, rect: el.getBoundingClientRect() });
+            items.push({
+                el,
+                threshold,
+                strength,
+                active: false,
+                rect: el.getBoundingClientRect(),
+                setX: gsap.quickTo(el, 'x', { duration: 0.3, ease: 'power3.out' }),
+                setY: gsap.quickTo(el, 'y', { duration: 0.3, ease: 'power3.out' }),
+            });
         });
     });
 
@@ -142,25 +152,24 @@ export function initMagneticButtons() {
     window.addEventListener('resize', refreshRects);
 
     document.addEventListener('mousemove', (e) => {
+        const px = e.clientX;
+        const py = e.clientY;
         items.forEach(item => {
             const rect = item.rect;
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
-            const dx = e.clientX - cx;
-            const dy = e.clientY - cy;
+            const dx = px - cx;
+            const dy = py - cy;
             const distSq = dx * dx + dy * dy;
             const threshSq = item.threshold * item.threshold;
 
             if (distSq < threshSq) {
                 item.active = true;
-                gsap.to(item.el, {
-                    x: dx * item.strength,
-                    y: dy * item.strength,
-                    duration: 0.3,
-                    ease: 'power3.out',
-                });
+                item.setX(dx * item.strength);
+                item.setY(dy * item.strength);
             } else if (item.active) {
                 item.active = false;
+                // Spring back with a one-off elastic tween (overwrites quickTo).
                 gsap.to(item.el, {
                     x: 0,
                     y: 0,

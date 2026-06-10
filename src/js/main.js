@@ -74,18 +74,43 @@ function initHoverLetters() {
 }
 initHoverLetters();
 
-// JS-driven hover for contact headline letters (pointer devices only)
+// JS-driven hover for contact headline letters (pointer devices only).
+// elementFromPoint forces a hit-test (layout); throttle to one probe per frame
+// and only run while the pointer is actually over the contact headline.
 if (matchMedia('(pointer: fine)').matches) {
-    let hovered = null;
-    document.addEventListener('mousemove', (e) => {
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        const hit = el && el.classList.contains('hover-letter') ? el : null;
-        if (hit !== hovered) {
-            if (hovered) hovered.style.color = '';
-            hovered = hit;
-            if (hovered) hovered.style.color = 'rgba(255,255,255,0.35)';
-        }
-    });
+    const hoverLettersRoot = document.querySelector('.contact-headline');
+    if (hoverLettersRoot) {
+        let hovered = null;
+        let pendingX = 0, pendingY = 0;
+        let probeScheduled = false;
+        let pointerInside = false;
+
+        const probe = () => {
+            probeScheduled = false;
+            if (!pointerInside) return;
+            const el = document.elementFromPoint(pendingX, pendingY);
+            const hit = el && el.classList.contains('hover-letter') ? el : null;
+            if (hit !== hovered) {
+                if (hovered) hovered.style.color = '';
+                hovered = hit;
+                if (hovered) hovered.style.color = 'rgba(255,255,255,0.35)';
+            }
+        };
+
+        hoverLettersRoot.addEventListener('pointerenter', () => { pointerInside = true; });
+        hoverLettersRoot.addEventListener('pointerleave', () => {
+            pointerInside = false;
+            if (hovered) { hovered.style.color = ''; hovered = null; }
+        });
+        hoverLettersRoot.addEventListener('mousemove', (e) => {
+            pendingX = e.clientX;
+            pendingY = e.clientY;
+            if (!probeScheduled) {
+                probeScheduled = true;
+                requestAnimationFrame(probe);
+            }
+        });
+    }
 }
 
 // ===== Canvas 2D background effects (Skills particles + Contact wave mesh) =====
@@ -369,12 +394,23 @@ if (isPointerDevice) {
 // ===== Project hover image preview =====
 let previewX = 0, previewY = 0, previewTargetX = 0, previewTargetY = 0;
 let previewActive = false;
+// Cached per-language refs so the animation loop avoids per-frame DOM queries.
+let activePreviewEl = null;
+let activeProjectItems = [];
+const boundProjectLangs = new Set();
 
 function bindProjectHovers() {
     const lang = getCurrentLang();
     const preview = document.querySelector(`.project-preview[data-lang="${lang}"]`);
     const imgs = preview ? preview.querySelectorAll('.preview-img') : [];
     const items = document.querySelectorAll(`.project-list[data-lang="${lang}"] .project-item`);
+    activePreviewEl = preview;
+    activeProjectItems = Array.from(items);
+
+    // Listeners are attached to the per-language DOM once; only the cached refs
+    // above need refreshing on subsequent language toggles.
+    if (boundProjectLangs.has(lang)) return;
+    boundProjectLangs.add(lang);
 
     items.forEach((item, index) => {
         item.addEventListener('mouseenter', () => {
@@ -566,6 +602,7 @@ initWallTunnel();
 // ===== 4. Scroll-velocity skew on project items =====
 let skewTarget = 0;
 let currentSkew = 0;
+let skewApplied = false;
 
 // ===== 5. Marquee scroll-responsive speed =====
 const marqueeTrack = document.querySelector('.marquee-track');
@@ -692,11 +729,27 @@ const timelineProgress = document.getElementById('timelineProgress');
 const timelineDots = document.querySelectorAll('.timeline-dot');
 const STEP_COUNT = timelineDots.length;
 
-// Unified scroll handler via Lenis
+// Unified scroll handler via Lenis.
+// Read phase first (getBoundingClientRect), then write phase (style mutations),
+// so style writes earlier in the handler don't force a synchronous reflow when
+// the timeline rect is later read.
 lenis.on('scroll', () => {
     const scrollProgress = getScrollProgress();
     const s = window.scrollY;
 
+    // --- Read phase ---
+    let timelineP = null;
+    if (timeline && timelineProgress) {
+        const rect = timeline.getBoundingClientRect();
+        const viewH = window.innerHeight;
+        const start = viewH * 0.6;
+        const end = viewH * 0.4;
+        const totalTravel = (rect.height + start - end);
+        const traveled = start - rect.top;
+        timelineP = Math.max(0, Math.min(1, traveled / totalTravel));
+    }
+
+    // --- Write phase ---
     // Hero text parallax (non-pointer devices only; pointer devices handled in animation loop)
     const heroZoom = Math.min(1, scrollProgress);
     if (!isPointerDevice && heroMain) {
@@ -717,23 +770,16 @@ lenis.on('scroll', () => {
     }
 
     // Timeline progress
-    if (timeline && timelineProgress) {
-        const rect = timeline.getBoundingClientRect();
-        const viewH = window.innerHeight;
-        const start = viewH * 0.6;
-        const end = viewH * 0.4;
-        const totalTravel = (rect.height + start - end);
-        const traveled = start - rect.top;
-        const p = Math.max(0, Math.min(1, traveled / totalTravel));
-
-        timelineProgress.style.height = (p * 100) + '%';
+    if (timelineP !== null) {
+        timelineProgress.style.height = (timelineP * 100) + '%';
 
         timelineDots.forEach((dot, i) => {
             const threshold = (i + 1) / (STEP_COUNT + 0.5);
-            if (p >= threshold) {
-                dot.classList.add('active');
-            } else {
-                dot.classList.remove('active');
+            const shouldBeActive = timelineP >= threshold;
+            // Only touch classList when the state actually flips, to avoid
+            // redundant style invalidation on every scroll frame.
+            if (shouldBeActive !== dot.classList.contains('active')) {
+                dot.classList.toggle('active', shouldBeActive);
             }
         });
     }
@@ -756,21 +802,29 @@ function animate(time) {
         bracket.style.setProperty('--by', by + 'px');
 
         // Preview follow (only when active)
-        if (previewActive) {
+        if (previewActive && activePreviewEl) {
             previewX += (previewTargetX - previewX) * 0.1;
             previewY += (previewTargetY - previewY) * 0.1;
-            const activePreview = document.querySelector(`.project-preview[data-lang="${getCurrentLang()}"]`);
-            if (activePreview) activePreview.style.transform = `translate(${previewX}px, ${previewY}px)`;
+            activePreviewEl.style.transform = `translate(${previewX}px, ${previewY}px)`;
         }
     }
 
-    // Scroll-velocity skew on project items
+    // Scroll-velocity skew on project items.
+    // Track whether skew is currently applied so we can write transforms only on
+    // the frames where the value actually changes (and clear once on settle).
     currentSkew += (skewTarget - currentSkew) * 0.1;
     skewTarget *= 0.95; // decay
     if (Math.abs(currentSkew) > 0.01) {
-        document.querySelectorAll(`.project-list[data-lang="${getCurrentLang()}"] .project-item`).forEach(item => {
-            item.style.transform = `skewY(${currentSkew}deg)`;
-        });
+        const skewStr = `skewY(${currentSkew}deg)`;
+        for (let i = 0; i < activeProjectItems.length; i++) {
+            activeProjectItems[i].style.transform = skewStr;
+        }
+        skewApplied = true;
+    } else if (skewApplied) {
+        for (let i = 0; i < activeProjectItems.length; i++) {
+            activeProjectItems[i].style.transform = '';
+        }
+        skewApplied = false;
     }
 
     // Three.js

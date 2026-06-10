@@ -3,7 +3,8 @@ import { CONFIG } from './config.js';
 import { scene } from './scene.js';
 
 export function createAtmosphere() {
-    const atmosGeo = new SphereGeometry(CONFIG.globeRadius * 1.02, 32, 32);
+    // 24 segments is plenty for a soft fresnel glow that bloom blurs anyway.
+    const atmosGeo = new SphereGeometry(CONFIG.globeRadius * 1.02, 24, 24);
     const atmosMat = new ShaderMaterial({
         uniforms: {
             uColor: { value: new Color(CONFIG.color) },

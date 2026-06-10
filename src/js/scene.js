@@ -22,8 +22,10 @@ export const renderer = new WebGLRenderer({
     alpha: true,
     powerPreference: 'high-performance',
 });
+// Cap device pixel ratio: 2 keeps the main scene crisp without paying for 3x retina.
+const PIXEL_RATIO = Math.min(window.devicePixelRatio, 2);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(PIXEL_RATIO);
 container.appendChild(renderer.domElement);
 
 export const controls = new OrbitControls(camera, renderer.domElement);
@@ -48,4 +50,6 @@ composer.addPass(renderPass);
 const bloomPass = new UnrealBloomPass(resolution, 0.4, 0.4, 0.85);
 composer.addPass(bloomPass);
 composer.setSize(window.innerWidth, window.innerHeight);
-composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// Bloom is a soft glow, so render the composer (RenderPass + blur passes) at a
+// lower pixel ratio than the main renderer — large fill-rate saving, no visible loss.
+composer.setPixelRatio(Math.min(PIXEL_RATIO, 1.5));
