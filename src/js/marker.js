@@ -34,7 +34,7 @@ export function createAvatarMarker(globePoints) {
     // --- A. Surface ring (Ripple) ---
     const ringGeo = new RingGeometry(0.1, 0.25, 32);
     const ringMat = new MeshBasicMaterial({
-        color: 0xffcc00,
+        color: 0xd93a2b, /* blueprint: vermilion Tokyo marker */
         transparent: true,
         opacity: 0.8,
         side: DoubleSide
@@ -47,7 +47,7 @@ export function createAvatarMarker(globePoints) {
     // --- B. Connection line (sci-fi pin) ---
     const lineGeo = new BufferGeometry().setFromPoints([surfacePos, floatPos]);
     const lineMat = new LineBasicMaterial({
-        color: 0xffcc00,
+        color: 0xd93a2b,
         transparent: true,
         opacity: 0.5
     });
@@ -74,9 +74,9 @@ export function createAvatarMarker(globePoints) {
             const y = (loadedImg.height - size) / 2;
             ctx.drawImage(loadedImg, x, y, size, size, 18, 18, 220, 220);
         } else {
-            ctx.fillStyle = '#ffcc00';
+            ctx.fillStyle = '#D93A2B';
             ctx.fill();
-            ctx.fillStyle = '#111';
+            ctx.fillStyle = '#F2EFE8';
             ctx.font = 'bold 60px Inter, Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -87,7 +87,7 @@ export function createAvatarMarker(globePoints) {
         ctx.beginPath();
         ctx.arc(128, 128, 110, 0, Math.PI * 2);
         ctx.lineWidth = 12;
-        ctx.strokeStyle = '#ffcc00';
+        ctx.strokeStyle = '#D93A2B';
         ctx.stroke();
 
         const texture = new CanvasTexture(canvas);

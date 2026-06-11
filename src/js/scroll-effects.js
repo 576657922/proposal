@@ -6,6 +6,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
+import { textScramble } from './text-scramble.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,6 +42,16 @@ export function initStaggerReveals() {
                     stagger: 0.1,
                     duration: 0.8,
                     ease: 'power2.out',
+                });
+                // Project names live in [data-scramble] children. The generic
+                // IntersectionObserver never sees these items (reveal class was
+                // removed above), so trigger the scramble type-in here.
+                batch.forEach(el => {
+                    el.querySelectorAll('[data-scramble]').forEach((child, ci) => {
+                        setTimeout(() => {
+                            textScramble(child, child.getAttribute('data-scramble'), 800);
+                        }, ci * 120);
+                    });
                 });
             },
             start: 'top 88%',

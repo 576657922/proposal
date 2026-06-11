@@ -7,15 +7,15 @@ const isLowEnd =
     (navigator.deviceMemory && navigator.deviceMemory <= 4);
 
 function pickParticleCount() {
-    if (isMobile) return isLowEnd ? 40000 : 60000;
-    return isLowEnd ? 80000 : 130000;
+    if (isMobile) return isLowEnd ? 60000 : 90000;
+    return isLowEnd ? 120000 : 200000;
 }
 
 export const CONFIG = {
     particleCount: pickParticleCount(),
     globeRadius: 7,
-    particleSize: 1.8,
-    color: 0xe8ff47,
+    particleSize: 2.1,
+    color: 0x1a1a1a, /* blueprint: ink particles on paper */
     rotationSpeed: 0.0014
 };
 

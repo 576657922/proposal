@@ -119,6 +119,15 @@ export function toggleLang() {
     return currentLang;
 }
 
+// Set language explicitly (used for browser-language / saved-preference init)
+export function setLang(lang) {
+    if (lang !== currentLang && translations[lang]) {
+        currentLang = lang;
+        applyTranslations();
+    }
+    return currentLang;
+}
+
 function applyTranslations() {
     const t = translations[currentLang];
 

@@ -24,6 +24,9 @@ export const renderer = new WebGLRenderer({
 });
 // Cap device pixel ratio: 2 keeps the main scene crisp without paying for 3x retina.
 const PIXEL_RATIO = Math.min(window.devicePixelRatio, 2);
+// blueprint: opaque paper clear color so the bloom composer never composites
+// against black, and the hero canvas matches the page background exactly
+renderer.setClearColor(0xf2efe8, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(PIXEL_RATIO);
 container.appendChild(renderer.domElement);
@@ -47,7 +50,9 @@ export const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-const bloomPass = new UnrealBloomPass(resolution, 0.4, 0.4, 0.85);
+// blueprint: raise threshold above the paper background's luminance and soften
+// strength, otherwise bloom blooms the light background itself
+const bloomPass = new UnrealBloomPass(resolution, 0.18, 0.4, 0.96);
 composer.addPass(bloomPass);
 composer.setSize(window.innerWidth, window.innerHeight);
 // Bloom is a soft glow, so render the composer (RenderPass + blur passes) at a

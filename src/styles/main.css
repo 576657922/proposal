@@ -2181,3 +2181,637 @@ h2.contact-headline .hover-letter:hover {
         font-size: 1.6rem;
     }
 }
+
+/* ============================================================
+   BLUEPRINT OVERRIDE LAYER — 「工程图纸 × 印鑑」 墨 × 朱 · 纸白底
+   Additive re-theme: everything above stays untouched; this block
+   re-tokens the palette and adds the drafting language on top.
+   Remove this block to restore the original dark theme.
+   ============================================================ */
+
+:root {
+    /* Blueprint tokens */
+    --paper: #F2EFE8;
+    --paper-raised: #EDE9E0;
+    --ink: #141414;
+    --ink-soft: #3A3A3A;
+    --note: #6B6B6B;
+    --vermilion: #D93A2B;
+    --vermilion-ink: #B22E21;
+    --hatch: repeating-linear-gradient(-45deg, transparent 0 5px, rgba(20,20,20,0.07) 5px 6px);
+
+    /* Re-point the legacy tokens at the new palette */
+    --bg: var(--paper);
+    --bg-raised: var(--paper-raised);
+    --bg-hover: #E7E2D7;
+    --fg: var(--ink);
+    --accent: var(--vermilion);
+    --muted: var(--note);
+    --glass: rgba(20,20,20,0.035);
+    --border: rgba(20,20,20,0.12);
+    --border-medium: rgba(20,20,20,0.22);
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+::selection { background: var(--vermilion); color: var(--paper); }
+
+/* Scroll progress line: thin vermilion, no glow on paper */
+body::after { box-shadow: none; height: 2px; }
+
+/* ---- Cursor: ink crosshair + live coordinate readout ---- */
+.cross-h, .cross-v { background: rgba(20,20,20,0.3); }
+.cross-dot { background: var(--ink); }
+.bracket-corner { border-color: rgba(20,20,20,0.4); }
+
+.cursor-coords {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--note);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.2s;
+}
+.cursor-cross.coords-active .cursor-coords { color: var(--vermilion); }
+
+/* ---- Project preview: square corners, ink label ---- */
+.project-preview { border-radius: 0; box-shadow: 0 16px 48px rgba(20,20,20,0.18); border: 1px solid var(--border-medium); }
+.preview-img span { color: rgba(255,255,255,0.55); text-shadow: 0 1px 12px rgba(0,0,0,0.4); }
+
+/* ---- Orbs: barely-there paper tints ---- */
+.orb-1 { background: radial-gradient(circle, rgba(217,58,43,0.10) 0%, rgba(217,58,43,0.03) 30%, transparent 60%); }
+.orb-2 { background: radial-gradient(circle, rgba(20,20,20,0.07) 0%, rgba(20,20,20,0.02) 30%, transparent 60%); }
+
+/* ---- Nav: paper bar, mono drafting labels ---- */
+.site-nav { background: rgba(242,239,232,0.78); }
+.nav-logo, .nav-links a { font-family: var(--font-mono); }
+.lang-toggle { border-radius: 0; font-family: var(--font-mono); }
+
+/* ---- Grain: blend instead of whitewash on paper ---- */
+.grain-overlay { opacity: 0.035 !important; mix-blend-mode: multiply; }
+
+/* ---- Hero ---- */
+.hero-title { font-weight: 300; } /* SG 200 never loaded; use the real weight */
+.hero-sub { color: var(--note); }
+.hero-label { font-family: var(--font-mono); }
+.hero-scroll { color: rgba(20,20,20,0.45); font-family: var(--font-mono); }
+.scroll-line { background: rgba(20,20,20,0.12); }
+.scroll-glow { background: linear-gradient(to bottom, transparent, rgba(217,58,43,0.4) 40%, rgba(217,58,43,0.08)); }
+.scroll-dot { box-shadow: 0 0 6px rgba(217,58,43,0.5), 0 0 20px rgba(217,58,43,0.15); }
+@media (max-width: 900px) {
+    .scroll-glow { background: linear-gradient(to right, transparent, rgba(217,58,43,0.4) 40%, rgba(217,58,43,0.08)); }
+}
+
+/* ---- Preloader: paper + mono counter ---- */
+.preloader-counter { font-family: var(--font-mono); }
+
+/* ---- Wall tunnel: re-inked for paper ---- */
+.wall-section { background: var(--paper); }
+.wall-layer img { filter: grayscale(1) brightness(0.25) contrast(1.1); opacity: 0.92; }
+/* The headline plate becomes a proper drawing label box */
+.wall-card::before { background: var(--paper); border: 1.5px solid rgba(20,20,20,0.6); }
+.wall-headline { color: var(--ink); }
+.wall-cta { border-radius: 0; font-family: var(--font-mono); }
+.wall-cta-primary { background: var(--ink); color: var(--paper); }
+.wall-cta-primary:hover { background: var(--vermilion); }
+.wall-cta-ghost { border: 1px solid rgba(20,20,20,0.45); color: var(--ink); }
+.wall-cta-ghost:hover { background: rgba(20,20,20,0.06); }
+.wall-scatter .scatter-card { border-radius: 2px; box-shadow: 0 18px 44px -20px rgba(20,20,20,0.45); border: 1px solid rgba(20,20,20,0.15); }
+
+/* ---- Sections: drafting labels, dash-dot dividers ---- */
+.section-label, .process-header, .timeline-step { font-family: var(--font-mono); }
+.section-divider {
+    background: repeating-linear-gradient(90deg,
+        rgba(20,20,20,0.35) 0 14px, transparent 14px 18px,
+        rgba(20,20,20,0.35) 18px 20px, transparent 20px 24px);
+}
+
+/* ---- About ---- */
+.trait-icon { border-radius: 0; }
+.stat { background: rgba(20,20,20,0.02); }
+.stat:hover { background: rgba(20,20,20,0.045); }
+.stat-label { font-family: var(--font-mono); }
+.stat-number { font-variant-numeric: tabular-nums; }
+
+/* ---- Timeline ---- */
+.timeline-line { background: rgba(20,20,20,0.12); }
+.timeline-dot { border-color: rgba(20,20,20,0.25); }
+
+/* ---- Work: hatching hover, square tags ---- */
+.project-item::before { background: var(--hatch); }
+.project-item:hover { box-shadow: 0 12px 32px rgba(20,20,20,0.08); }
+.project-item:hover .tag { border-color: rgba(217,58,43,0.4); color: var(--ink-soft); }
+.tag { border: 1px solid rgba(20,20,20,0.2); border-radius: 0; font-family: var(--font-mono); }
+
+/* ---- Marquee ---- */
+.marquee-item { -webkit-text-stroke: 0.5px rgba(20,20,20,0.25); }
+.marquee-item:hover {
+    -webkit-text-stroke-color: var(--vermilion);
+    color: rgba(217,58,43,0.06);
+    text-shadow: 0 0 60px rgba(217,58,43,0.12);
+}
+
+/* ---- Skills cards: ink-line drafting cards ---- */
+.card-face { border: 1.5px solid rgba(20,20,20,0.3); }
+.card-back, .card-front {
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(20,20,20,0.14),
+        0 4px 24px rgba(20,20,20,0.08);
+}
+.skill-cell:not(.flipped):hover .card-back,
+.skill-cell.flipped:hover .card-front {
+    box-shadow:
+        inset 0 0 0 7px var(--bg-raised),
+        inset 0 0 0 8px rgba(20,20,20,0.2),
+        0 16px 48px rgba(20,20,20,0.14);
+    border-color: rgba(20,20,20,0.45);
+}
+.card-inner::before { background: linear-gradient(to bottom, rgba(20,20,20,0.12), rgba(20,20,20,0.06) 50%, rgba(20,20,20,0.14)); }
+.card-inner::after { background: linear-gradient(to bottom, rgba(20,20,20,0.1), rgba(20,20,20,0.12)); }
+.card-shine {
+    background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%),
+        rgba(255,255,255, var(--shine-opacity, 0)) 0%, transparent 60%);
+    mix-blend-mode: soft-light;
+}
+.card-back::after { font-family: var(--font-mono); }
+.skill-number, .card-back-num { font-family: var(--font-mono); }
+
+/* ---- Contact ---- */
+#contact::before {
+    background: linear-gradient(90deg, transparent, rgba(217,58,43,0.25), rgba(20,20,20,0.12), rgba(217,58,43,0.25), transparent);
+}
+.contact-subtitle { color: var(--note); }
+h2.contact-headline .hover-letter:hover { color: var(--vermilion); }
+.contact-btn {
+    border-radius: 0;
+    font-family: var(--font-mono);
+    color: var(--vermilion-ink);
+    background: rgba(217,58,43,0.05);
+    border: 1px solid rgba(217,58,43,0.5);
+    box-shadow: none;
+}
+.contact-btn::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); }
+.contact-btn:hover {
+    background: var(--vermilion);
+    border-color: var(--vermilion);
+    color: var(--paper);
+    box-shadow: 0 8px 24px rgba(217,58,43,0.18);
+}
+.copy-toast { border-radius: 0; font-family: var(--font-mono); }
+.social-links a { border-radius: 0; font-family: var(--font-mono); }
+.social-links a:hover { color: var(--vermilion-ink); background: rgba(20,20,20,0.04); border-color: rgba(20,20,20,0.14); box-shadow: none; }
+
+/* Drafting note ※ — the start-small / availability line */
+.contact-note {
+    margin: 56px auto 0;
+    max-width: 520px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--note);
+    padding-left: 1.6em;
+    position: relative;
+}
+.contact-note::before {
+    content: '※';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--vermilion);
+}
+
+
+/* ---- Blueprint 図枠 (viewport frame) ---- */
+.bp-frame {
+    position: fixed;
+    inset: clamp(10px, 1.6vw, 20px);
+    border: 1px solid rgba(20,20,20,0.35);
+    pointer-events: none;
+    z-index: 9000;
+}
+.bp-mark { position: absolute; width: 13px; height: 13px; }
+.bp-mark::before, .bp-mark::after { content: ''; position: absolute; background: rgba(20,20,20,0.5); }
+.bp-mark::before { width: 13px; height: 1px; top: 6px; left: 0; }
+.bp-mark::after { width: 1px; height: 13px; top: 0; left: 6px; }
+.bp-mark-tl { top: -7px; left: -7px; }
+.bp-mark-tr { top: -7px; right: -7px; }
+.bp-mark-bl { bottom: -7px; left: -7px; }
+.bp-mark-br { bottom: -7px; right: -7px; }
+
+.bp-frame-info {
+    position: absolute;
+    bottom: -1px;
+    right: 24px;
+    transform: translateY(50%);
+    display: flex;
+    gap: 18px;
+    padding: 2px 12px;
+    background: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--note);
+    font-variant-numeric: tabular-nums;
+}
+.bp-sheet { color: var(--ink-soft); }
+
+/* ---- FIG.1 leader annotation (hero globe) ---- */
+.fig-label {
+    position: absolute;
+    right: clamp(24px, 5vw, 72px);
+    top: 56%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--note);
+    opacity: 0;
+    animation: fadeSlideUp 1s 2.4s var(--ease-out) forwards;
+}
+.fig-line { width: 56px; height: 1px; background: rgba(20,20,20,0.4); position: relative; }
+.fig-line::before {
+    content: '';
+    position: absolute;
+    left: -3px; top: -2.5px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--vermilion);
+}
+
+.footer-copy { font-family: var(--font-mono); }
+.footer-logo { font-family: var(--font-mono); }
+
+/* ---- Mobile quick-contact bar ---- */
+.mobile-contact-bar {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 9500;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 16px calc(13px + env(safe-area-inset-bottom));
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transform: translateY(0);
+    transition: transform 0.35s var(--ease-out);
+}
+.mobile-contact-bar.bar-hidden { transform: translateY(110%); }
+@media (max-width: 768px) and (pointer: coarse) {
+    .mobile-contact-bar { display: flex; }
+}
+
+/* ---- 日本語タイポグラフィ (:lang(ja)) ---- */
+:root:lang(ja) {
+    --font: 'IBM Plex Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+:lang(ja) body { letter-spacing: 0; }
+:lang(ja) h1, :lang(ja) h2, :lang(ja) h3, :lang(ja) .hero-title {
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+}
+:lang(ja) .hero-title {
+    font-weight: 600;
+    line-height: 1.3;
+    font-size: clamp(2.8rem, 6.5vw, 5.5rem); /* JA chars are wider; keep lines unwrapped */
+}
+:lang(ja) .hero-title em {
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--vermilion);
+}
+/* 傍点 emphasis only at body sizes — at display size the dots float oddly */
+:lang(ja) p em, :lang(ja) li em {
+    font-style: normal;
+    font-weight: 700;
+    text-emphasis: filled dot var(--vermilion);
+    -webkit-text-emphasis: filled dot var(--vermilion);
+}
+:lang(ja) p, :lang(ja) li, :lang(ja) td {
+    line-height: 1.9;
+    letter-spacing: 0;
+    line-break: strict;
+    overflow-wrap: anywhere;
+}
+:lang(ja) .pull-quote {
+    font-family: var(--font);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+}
+:lang(ja) .section h2 {
+    font-family: var(--font);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+}
+:lang(ja) h2.contact-headline {
+    font-family: var(--font), sans-serif !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.02em !important;
+    font-size: clamp(2.8rem, 9vw, 9rem) !important;
+}
+:lang(ja) .timeline-desc, :lang(ja) .trait-text p { line-height: 1.85; }
+:lang(ja) .hero-sub { line-height: 1.95; }
+
+/* ---- Lanyard ID badge (hero, draggable) ---- */
+.badge-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    perspective: 1100px;
+    opacity: 1;
+}
+.badge-strap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+/* Wide black lanyard ribbon with printed wordmark running down it —
+   three stacked strokes build the ribbon, an SVG textPath rides the core
+   path so the lettering flows with every swing.
+   (d attributes are written by badge.js each frame; styles only here.) */
+.badge-strap path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.strap-line.strap-edge { stroke: #0E0E0E; stroke-width: 23px; }
+.strap-line.strap-core { stroke: #1B1B1B; stroke-width: 20px; }
+.strap-line.strap-hi   { stroke: rgba(255, 255, 255, 0.10); stroke-width: 1px; }
+.strap-text {
+    fill: #F2EFE8;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    dominant-baseline: middle;
+}
+.strap-text .strap-text-accent { fill: var(--vermilion); }
+
+/* Black poster-style staff pass — typography-led, high contrast.
+   badge.js writes inline transform + --roty (deg, ~-40..40);
+   --roty drives the sheen sweep and shadow offset. */
+.badge-card {
+    --roty: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 170px;
+    height: 255px;
+    padding: 34px 16px 14px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #1A1A1A 0%, #161616 55%, #121212 100%);
+    border: 1px solid rgba(0, 0, 0, 0.65);
+    box-shadow:
+        /* card thickness: faint top lip / deep bottom lip */
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.7),
+        /* tight contact shadow */
+        calc(var(--roty) * -0.15px) 1px 2px rgba(20, 20, 20, 0.2),
+        /* restrained ambient shadow */
+        calc(var(--roty) * -0.35px) 16px 30px -12px rgba(20, 20, 20, 0.35);
+    transform-origin: 50% 0;
+    will-change: transform;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: var(--font-mono);
+}
+/* faint engineering-grid texture over the black surface */
+.badge-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+        repeating-linear-gradient(0deg,   #fff 0 1px, transparent 1px 13px),
+        repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 13px);
+}
+/* white micro-sheen sliding across the black card as it rotates */
+.badge-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 6;
+    background-image: linear-gradient(112deg,
+        rgba(255, 255, 255, 0)     40%,
+        rgba(255, 255, 255, 0.03)  46%,
+        rgba(255, 255, 255, 0.09)  50%,
+        rgba(255, 255, 255, 0.03)  54%,
+        rgba(255, 255, 255, 0)     60%);
+    background-repeat: no-repeat;
+    background-size: 280% 100%;
+    background-position-x: calc(50% + var(--roty) * -1.7%);
+}
+.badge-card.grabbed {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.7),
+        calc(var(--roty) * -0.15px) 5px 9px rgba(20, 20, 20, 0.12),
+        calc(var(--roty) * -0.5px) 32px 56px -18px rgba(20, 20, 20, 0.45);
+}
+/* dark stamped metal eyelet, tuned for the black card */
+.badge-slot {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #000, #1C1C1A 80%);
+    box-shadow:
+        inset 0 1.5px 2px rgba(0, 0, 0, 0.9),
+        inset 0 -1px 1px rgba(255, 255, 255, 0.12);
+    z-index: 3;
+}
+.badge-slot::before {
+    content: "";
+    position: absolute;
+    inset: -3.5px -4.5px;
+    border-radius: 999px;
+    background: linear-gradient(155deg,
+        #6E6E6A 0%, #2E2E2C 40%, #585855 52%, #232321 72%, #62625E 100%);
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.35),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+/* oversized wordmark — the strongest element on the card */
+.badge-name {
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Grotesk', var(--font), sans-serif;
+    font-size: 31px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #F5F2EC;
+}
+.badge-dash { color: var(--vermilion); }
+.badge-role {
+    position: relative;
+    z-index: 1;
+    margin-top: 6px;
+    font-size: 7px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8C8C86;
+    white-space: nowrap; /* never break FULL-STACK across lines */
+}
+/* photo row: small high-contrast B/W portrait + QR-like pixel cluster */
+.badge-mid {
+    position: relative;
+    z-index: 1;
+    margin-top: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+.badge-photo {
+    width: 64px;
+    height: 76px;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.badge-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
+    filter: saturate(1.06) contrast(1.06); /* colour photo, lightly tuned */
+}
+/* 5x6 pixel-mosaic cluster, drawn with box-shadows (11px pitch, 8px cells) */
+.badge-pixels {
+    margin-top: 2px;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow:
+        22px 0    0 rgba(255, 255, 255, 0.10),
+        44px 0    0 var(--vermilion),
+        11px 11px 0 rgba(255, 255, 255, 0.15),
+        44px 11px 0 rgba(255, 255, 255, 0.08),
+        0    22px 0 rgba(255, 255, 255, 0.08),
+        33px 22px 0 rgba(255, 255, 255, 0.13),
+        22px 33px 0 rgba(255, 255, 255, 0.10),
+        44px 33px 0 rgba(255, 255, 255, 0.15),
+        0    44px 0 rgba(255, 255, 255, 0.13),
+        11px 44px 0 var(--vermilion),
+        11px 55px 0 rgba(255, 255, 255, 0.08),
+        33px 55px 0 var(--vermilion),
+        44px 55px 0 rgba(255, 255, 255, 0.10);
+}
+/* machine-readable zone */
+.badge-meta {
+    position: relative;
+    z-index: 1;
+    margin-top: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    font-size: 6.5px;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    color: #767670;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+/* full-width white barcode block above a centered serial */
+.badge-foot {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--vermilion);
+}
+.badge-barcode {
+    width: 100%;
+    height: 15px;
+    background: repeating-linear-gradient(90deg,
+        #EDEAE3 0 1px,    transparent 1px 2.5px,
+        #EDEAE3 2.5px 5px, transparent 5px 6px,
+        #EDEAE3 6px 7px,   transparent 7px 9.5px,
+        #EDEAE3 9.5px 12px, transparent 12px 13.5px,
+        #EDEAE3 13.5px 14.5px, transparent 14.5px 17px);
+}
+.badge-code {
+    font-size: 6.5px;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    color: #8C8C86;
+    white-space: nowrap;
+}
+@media (max-width: 900px) {
+    .badge-wrap { display: none; }
+}
+
+/* ---- Accessibility baseline ---- */
+:focus-visible {
+    outline: 2px solid var(--vermilion);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .reveal, .reveal-scale, .reveal-left {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+    }
+    .cursor-cross, .cursor-bracket { display: none !important; }
+    body { cursor: auto; }
+}
+
+/* ---- Responsive adjustments for blueprint chrome ---- */
+@media (max-width: 900px) {
+    .fig-label { display: none; }
+    .bp-docno, .bp-scale { display: none; }
+    .bp-frame { inset: 8px; }
+    .bp-frame-info { right: 12px; gap: 10px; }
+}
+@media (max-width: 480px) {
+    .cursor-coords { display: none; }
+}

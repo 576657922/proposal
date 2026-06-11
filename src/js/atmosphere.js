@@ -1,4 +1,4 @@
-import { SphereGeometry, ShaderMaterial, Color, AdditiveBlending, Mesh } from 'three';
+import { SphereGeometry, ShaderMaterial, Color, NormalBlending, Mesh } from 'three';
 import { CONFIG } from './config.js';
 import { scene } from './scene.js';
 
@@ -30,7 +30,8 @@ export function createAtmosphere() {
                 gl_FragColor = vec4(uColor, intensity * 0.15 * uIntensity);
             }
         `,
-        blending: AdditiveBlending,
+        // blueprint: NormalBlending — a soft graphite rim instead of neon glow
+        blending: NormalBlending,
         transparent: true,
         depthWrite: false
     });

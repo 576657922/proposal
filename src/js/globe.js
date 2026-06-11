@@ -1,4 +1,4 @@
-import { BufferGeometry, BufferAttribute, ShaderMaterial, Color, Points, AdditiveBlending } from 'three';
+import { BufferGeometry, BufferAttribute, ShaderMaterial, Color, Points, NormalBlending } from 'three';
 import { CONFIG, japanQuaternion } from './config.js';
 import { scene } from './scene.js';
 
@@ -110,7 +110,9 @@ export function createGlobe(texture) {
             }
         `,
         transparent: true,
-        blending: AdditiveBlending,
+        // blueprint: NormalBlending so dark ink particles stay visible on the
+        // light paper background (additive would wash them out to white)
+        blending: NormalBlending,
         depthWrite: false
     });
 

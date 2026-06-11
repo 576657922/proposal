@@ -7,12 +7,13 @@ import { createAtmosphere } from './atmosphere.js';
 import { createAvatarMarker } from './marker.js';
 import { getScrollProgress, initScrollControls } from './controls.js';
 import { textScramble } from './text-scramble.js';
-import { toggleLang, getCurrentLang } from './i18n.js';
+import { toggleLang, setLang, getCurrentLang } from './i18n.js';
 // import { CursorRipple } from './cursor-ripple.js';
 import { initAnimatedGrain } from './grain.js';
 import { ParticleField } from './particles.js';
 import { initCardTilt, initArrowBounce, initMagneticButtons } from './micro-interactions.js';
 import { initStaggerReveals, initParallax, initParagraphReveals, initColorTransitions, initSectionDividers, initFooterReveal, initWallTunnel } from './scroll-effects.js';
+import { initBadge } from './badge.js';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -43,6 +44,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // Initialize scroll-driven zoom
 initScrollControls();
+
+// Blueprint: lanyard ID badge (drops in after preloader, draggable)
+initBadge();
 
 // ===== Cursor glow trail (disabled — too AI-template-like) =====
 // const cursorRipple = new CursorRipple(null, {
@@ -93,7 +97,7 @@ if (matchMedia('(pointer: fine)').matches) {
             if (hit !== hovered) {
                 if (hovered) hovered.style.color = '';
                 hovered = hit;
-                if (hovered) hovered.style.color = 'rgba(255,255,255,0.35)';
+                if (hovered) hovered.style.color = 'var(--vermilion)';
             }
         };
 
@@ -216,7 +220,7 @@ function checkReady() {
 function exitPreloader() {
     // 2a: Accent flash on preloader line before exit
     gsap.to(preloaderLine, {
-        boxShadow: '0 0 20px rgba(232,255,71,0.8), 0 0 40px rgba(232,255,71,0.4)',
+        boxShadow: '0 0 20px rgba(217,58,43,0.6), 0 0 40px rgba(217,58,43,0.3)',
         duration: 0.3, yoyo: true, repeat: 1,
     });
 
@@ -315,6 +319,7 @@ window.addEventListener('resize', () => {
 const langToggle = document.getElementById('langToggle');
 langToggle.addEventListener('click', () => {
     const newLang = toggleLang();
+    localStorage.setItem('lang', newLang);
     langToggle.textContent = newLang === 'ja' ? 'English' : '日本語';
 
     // Re-render hover letters for new language
@@ -339,6 +344,7 @@ const isPointerDevice = matchMedia('(pointer: fine)').matches;
 const cross = document.getElementById('cursorCross');
 const bracket = document.getElementById('cursorBracket');
 const cursorLabel = document.getElementById('cursorLabel');
+const cursorCoords = document.getElementById('cursorCoords');
 let mx = 0, my = 0, bx = 0, by = 0;
 let cursorState = 'default'; // 'default' | 'hover' | 'view' | 'cta'
 
@@ -352,6 +358,9 @@ function setCursorState(state) {
     bracket.classList.remove('hovered', 'cursor-view', 'cursor-cta');
     cross.classList.remove('hidden');
     cursorLabel.textContent = '';
+
+    // blueprint: coordinate readout turns vermilion over interactive elements
+    cross.classList.toggle('coords-active', state !== 'default');
 
     if (state === 'hover') {
         bracket.classList.add('hovered');
@@ -379,7 +388,7 @@ if (isPointerDevice) {
     });
 
     // Hover links — brackets expand + accent
-    document.querySelectorAll('a:not(.project-item):not(.contact-btn), button, .skill-cell').forEach(el => {
+    document.querySelectorAll('a:not(.project-item):not(.contact-btn), button, .skill-cell, .badge-card').forEach(el => {
         el.addEventListener('mouseenter', () => setCursorState('hover'));
         el.addEventListener('mouseleave', () => setCursorState('default'));
     });
@@ -434,6 +443,18 @@ function bindProjectHovers() {
     });
 }
 bindProjectHovers();
+
+// ===== Initial language: saved preference, else browser language =====
+{
+    const savedLang = localStorage.getItem('lang');
+    const initialLang = savedLang || ((navigator.language || '').startsWith('ja') ? 'ja' : 'en');
+    if (initialLang === 'ja' && getCurrentLang() !== 'ja') {
+        setLang('ja');
+        langToggle.textContent = 'English';
+        initHoverLetters();
+        switchProjectLang('ja');
+    }
+}
 
 // Language-aware project/preview switcher
 function switchProjectLang(lang) {
@@ -592,7 +613,8 @@ document.querySelectorAll('#about h2, #work h2, #skills h2, #contact h2').forEac
 
 initParagraphReveals();
 initParallax();
-initColorTransitions(null, sceneRefs);
+// blueprint: rainbow accent transitions disabled — single vermilion brand color
+// initColorTransitions(null, sceneRefs);
 initSectionDividers();
 initFooterReveal();
 initWallTunnel();
@@ -801,6 +823,13 @@ function animate(time) {
         bracket.style.setProperty('--bx', bx + 'px');
         bracket.style.setProperty('--by', by + 'px');
 
+        // blueprint: live drafting coordinate readout next to the crosshair
+        if (cursorCoords) {
+            cursorCoords.textContent =
+                'X:' + String(Math.max(0, Math.round(mx))).padStart(4, '0') +
+                ' Y:' + String(Math.max(0, Math.round(my))).padStart(4, '0');
+        }
+
         // Preview follow (only when active)
         if (previewActive && activePreviewEl) {
             previewX += (previewTargetX - previewX) * 0.1;
@@ -986,6 +1015,41 @@ if (emailBtn && copyToast) {
             setTimeout(() => copyToast.classList.remove('show'), 1800);
         });
     });
+}
+
+// ===== Blueprint: sheet indicator (図枠下沿页码) =====
+const bpSheet = document.getElementById('bpSheet');
+if (bpSheet) {
+    const sheetMap = [
+        ['.hero-wrapper', '01'], ['#wallSection', '02'], ['#about', '03'],
+        ['#process', '04'], ['#work', '05'], ['#skills', '06'], ['#contact', '07'],
+    ];
+    const sheetObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                bpSheet.textContent = 'SHT ' + entry.target.dataset.bpSheet + ' / 07';
+            }
+        });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    sheetMap.forEach(([sel, num]) => {
+        const el = document.querySelector(sel);
+        if (el) {
+            el.dataset.bpSheet = num;
+            sheetObserver.observe(el);
+        }
+    });
+}
+
+// ===== Blueprint: hide the mobile contact bar while #contact is in view =====
+const mobileContactBar = document.getElementById('mobileContactBar');
+const contactSection = document.getElementById('contact');
+if (contactSection && mobileContactBar) {
+    const contactBarObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            mobileContactBar.classList.toggle('bar-hidden', entry.isIntersecting);
+        });
+    }, { threshold: 0.3 });
+    contactBarObserver.observe(contactSection);
 }
 
 window.onload = function () {
