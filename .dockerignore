@@ -8,3 +8,4 @@ dist
 Dockerfile
 .dockerignore
 blueprint-design-spec.md
+cloudbuild.yaml
