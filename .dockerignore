@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+dist
+.vercel
+.DS_Store
+*.local
+Dockerfile
+.dockerignore
+blueprint-design-spec.md
